@@ -19,17 +19,17 @@ public class RestData {
 	public Map<String, Object> greeting() {
 		Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", 200);
-        map.put("message", "RECIBI DEL BACK DE SPRING; STA BIEN?");
+        map.put("message", "Respuesta de SpringBoot");
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baño? sin luz? sta bien? anda?";
+//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baï¿½o? sin luz? sta bien? anda?";
 	}
 	
 	@PostMapping("/AnalizarImagen")
 	public Map<String, Object> analize(@RequestBody String image) {
 		Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", 200);
-        map.put("message", "RECIBI DEL BACK DE SPRING; STA BIEN?");
+        map.put("message", "Respuesta de SpringBoot, Imagen Recibida");
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baño? sin luz? sta bien? anda?";
+//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baï¿½o? sin luz? sta bien? anda?";
 	}
 }
