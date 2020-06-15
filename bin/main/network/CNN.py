@@ -10,8 +10,8 @@ import pathlib
 
 IMG_SIZE = 50
 
-# train_data_dir= str(pathlib.Path().absolute())+'/data/train'
-# validation_data_dir = str(pathlib.Path().absolute())+'/data/validation'
+# train_data_dir= str(pathlib.Path().absolute())+'/src/main/resources/network/data/train'
+# validation_data_dir = str(pathlib.Path().absolute())+'/src/main/resources/network/data/validation'
 # nb_train_samples=1000
 # nb_validation_samples=100
 # epochs=20
@@ -63,8 +63,9 @@ IMG_SIZE = 50
 # model.save_weights('first_try.h5')
 # model.save('modeloCompleto.h5')
 try:
-    img_pred = image.load_img(str(pathlib.Path().absolute())+'/vitiligo2.jpeg',target_size=(IMG_SIZE,IMG_SIZE))
+    img_pred = image.load_img(str(pathlib.Path().absolute())+'/src/main/resources/network/vitiligo2.jpeg',target_size=(IMG_SIZE,IMG_SIZE))
 except Exception as error:
+    print("ERROR: ")
     print(error)
 img_pred = image.img_to_array(img_pred)
 
@@ -72,7 +73,7 @@ img_pred = np.expand_dims(img_pred, axis=0)
 
 ################################
 from keras.models import load_model
-model = load_model(str(pathlib.Path().absolute())+'/modeloCompleto.h5')
+model = load_model(str(pathlib.Path().absolute())+'/src/main/resources/network/modeloCompleto.h5')
 res = model.predict(img_pred)
 
 if res[0][0]==1:
