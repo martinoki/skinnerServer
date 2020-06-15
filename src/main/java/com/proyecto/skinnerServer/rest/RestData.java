@@ -27,7 +27,8 @@ public class RestData {
             String s = "ANÁLISIS DE IMAGEN - RESULTADO: ";
             System.out.println(System.getProperty("user.dir"));
             //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/ProyectoSkinner/RedCNN/Red2/CNN.py");
-            Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/hello.py")	;
+            //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/hello.py")	;
+            Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py")	;
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
             System.out.println("Waiting for batch file ...");
             try {
