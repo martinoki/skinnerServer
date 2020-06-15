@@ -65,7 +65,6 @@ IMG_SIZE = 50
 try:
     img_pred = image.load_img(str(pathlib.Path().absolute())+'/src/main/resources/network/vitiligo2.jpeg',target_size=(IMG_SIZE,IMG_SIZE))
 except Exception as error:
-    print("ERROR: ")
     print(error)
 img_pred = image.img_to_array(img_pred)
 
