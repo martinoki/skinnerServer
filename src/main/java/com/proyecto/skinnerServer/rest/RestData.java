@@ -77,9 +77,14 @@ public class RestData {
 			//Y CREARLO CON EL MISMO NOMBRE
 
 	        String s = null;
+	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
+	        String scriptDir = baseDir + "/label_image.py ";
+	        String modelDir = "--graph=" + baseDir + "/retrained_graph.pb ";
+	        String labelDir = "--label=" + baseDir + "/retrained_labels.txt ";
+	        String file = "--image=" + baseDir + "/decoderimage.jpg ";
 	        //ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL DECODER
-	        Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
-	       System.out.println("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
+	        //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
+	        Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
 	        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	        while((s = in.readLine())!=null){
 	        map.put("message",s);
