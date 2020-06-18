@@ -8,6 +8,11 @@ from keras_preprocessing import image
 from tensorflow.keras.callbacks import TensorBoard
 import pathlib
 
+import io
+import base64
+import sys
+from PIL import Image
+
 IMG_SIZE = 50
 
 # train_data_dir= str(pathlib.Path().absolute())+'/src/main/resources/network/data/train'
@@ -62,8 +67,12 @@ IMG_SIZE = 50
 
 # model.save_weights('first_try.h5')
 # model.save('modeloCompleto.h5')
+image_file = sys.argv[1]+'.jpg'
+
+
 try:
-    img_pred = image.load_img(str(pathlib.Path().absolute())+'/src/main/resources/network/vitiligo2.jpeg',target_size=(IMG_SIZE,IMG_SIZE))
+    img_pred = image.load_img(str(pathlib.Path().absolute())+'/src/main/resources/network/' + image_file,target_size=(IMG_SIZE,IMG_SIZE))	
+    #img_pred = image.load_img(str(pathlib.Path().absolute())+'/src/main/resources/network/decoderimage.jpg',target_size=(IMG_SIZE,IMG_SIZE))
 except Exception as error:
     print(error)
 img_pred = image.img_to_array(img_pred)

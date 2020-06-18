@@ -1,8 +1,11 @@
 package com.proyecto.skinnerServer.rest;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +54,7 @@ public class RestData {
         return map;
 //		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
 	}
-	
+	/*
 	@PostMapping("/AnalizarImagen")
 	public Map<String, Object> analize(@RequestBody String image) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -59,5 +62,47 @@ public class RestData {
         map.put("message", "Respuesta de SpringBoot, Imagen Recibida");
         return map;
 //		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
+	}*/
+	
+	@PostMapping("/AnalizarImagen")
+	public Map<String, Object> analize(@RequestBody Map<String, String> image) {
+	Map<String, Object> map = new HashMap<String, Object>();
+	
+	try {
+
+			String imagenBase64 =image.get("image");
+			//decoder(obj.getString("image") ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
+			decoder( imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
+			//MODIFICAR, PODRÍAMOS ENVIAR POR PARÁMETRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
+			//Y CREARLO CON EL MISMO NOMBRE
+
+	        String s = null;
+	        //ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL DECODER
+	        Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
+	       System.out.println("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
+	        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	        while((s = in.readLine())!=null){
+	        map.put("message",s);
+	        }
+	       }
+	       catch(IOException e)
+	       {
+	        e.printStackTrace();
+	       }
+	       map.put("status", 200);
+	       
+	       return map;
 	}
+
+	public static void decoder(String base64Image, String pathFile) {
+	   try (FileOutputStream imageOutFile = new FileOutputStream(pathFile)) {
+	     // Converting a Base64 String into Image byte array
+	     byte[] imageByteArray = Base64.getMimeDecoder().decode(base64Image);
+	     imageOutFile.write(imageByteArray);
+	   } catch (FileNotFoundException e) {
+	     System.out.println("Image not found" + e);
+	   } catch (IOException ioe) {
+	     System.out.println("Exception while reading the Image " + ioe);
+	   }
+	 }
 }
