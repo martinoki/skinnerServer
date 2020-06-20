@@ -4,14 +4,6 @@ plugins {
 	id 'java'
 }
 
-task stage {
-    dependsOn build
-    doLast {
-        delete fileTree(dir: "build", exclude: "libs")
-        delete fileTree(dir: "build/libs", exclude: "*.jar")
-    }
-}
-
 group = 'com.proyecto.skinnerServer'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
