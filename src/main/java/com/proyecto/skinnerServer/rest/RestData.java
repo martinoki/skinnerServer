@@ -67,14 +67,16 @@ public class RestData {
 	@PostMapping("/AnalizarImagen")
 	public Map<String, Object> analize(@RequestBody Map<String, String> image) {
 	Map<String, Object> map = new HashMap<String, Object>();
-	
+	System.out.println("Entre a Analizar");
 	try {
-
+			System.out.println("Entre al try");
 			String imagenBase64 =image.get("image");
+			System.out.println("Hice el get de image");
 			//decoder(obj.getString("image") ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
 			decoder( imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
 			//MODIFICAR, PODRÍAMOS ENVIAR POR PARÁMETRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
 			//Y CREARLO CON EL MISMO NOMBRE
+			System.out.println("Pase el decoder");
 
 	        String s = null;
 	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
@@ -84,14 +86,20 @@ public class RestData {
 	        String file = "--image=" + baseDir + "/decoderimage.jpg ";
 	        //ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL DECODER
 	        //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
+	        System.out.println("Pase todos los string");
 	        Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
+	        System.out.println("Pase el process");
 	        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	        System.out.println("Pase el bufferreader");
 	        while((s = in.readLine())!=null){
+        	System.out.println(s);
 	        map.put("message",s);
 	        }
 	       }
 	       catch(IOException e)
 	       {
+	    	System.out.println("Error");
+	    	System.out.println(e);
 	        e.printStackTrace();
 	       }
 	       map.put("status", 200);

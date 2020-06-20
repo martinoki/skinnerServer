@@ -84,35 +84,47 @@ parser.add_argument(
 
 def load_image(filename):
   """Read in the image_data to be classified."""
+  print("E")
   return tf.gfile.FastGFile(filename, 'rb').read()
 
 
 def load_labels(filename):
   """Read in labels, one label per line."""
+  print("F")
   return [line.rstrip() for line in tf.gfile.GFile(filename)]
 
 
 def load_graph(filename):
   """Unpersists graph from file as default graph."""
+  print("G")
   with tf.gfile.FastGFile(filename, 'rb') as f:
+    print("H")
     graph_def = tf.GraphDef()
+    print("I")
     graph_def.ParseFromString(f.read())
+    print("J")
     tf.import_graph_def(graph_def, name='')
+    print("K")
 
 
 def run_graph(image_data, labels, input_layer_name, output_layer_name,
               num_top_predictions):
+  print("L")
   with tf.Session() as sess:
     # Feed the image_data as input to the graph.
     #   predictions will contain a two-dimensional array, where one
     #   dimension represents the input image count, and the other has
     #   predictions per class
+    print("M")
     softmax_tensor = sess.graph.get_tensor_by_name(output_layer_name)
+    print("N")
     predictions, = sess.run(softmax_tensor, {input_layer_name: image_data})
+    print("O")
 
     # Sort to show labels in order of confidence
     top_k = predictions.argsort()[-num_top_predictions:][::-1]
     data = {}
+    print("P")
     for node_id in top_k:
       human_string = labels[node_id]
       score = predictions[node_id]
@@ -128,22 +140,30 @@ def main(argv):
     raise ValueError('Unused Command Line Args: %s' % argv[1:])
 
   if not tf.gfile.Exists(FLAGS.image):
+    print("Error1")
     a = 1#tf.logging.fatal('image file does not exist %s', FLAGS.image)
 
   if not tf.gfile.Exists(FLAGS.labels):
+    print("Error2")
     a = 1#tf.logging.fatal('labels file does not exist %s', FLAGS.labels)
 
   if not tf.gfile.Exists(FLAGS.graph):
+    print("Error3")
     a = 1#tf.logging.fatal('graph file does not exist %s', FLAGS.graph)
 
   # load image
+  print("A")
   image_data = load_image(FLAGS.image)
 
   # load labels
+  print("B")
   labels = load_labels(FLAGS.labels)
 
   # load graph, which is stored in the default session
+  print("C")
   load_graph(FLAGS.graph)
+  
+  print("D")
 
   run_graph(image_data, labels, FLAGS.input_layer, FLAGS.output_layer,
             FLAGS.num_top_predictions)
