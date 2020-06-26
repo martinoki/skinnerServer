@@ -27,7 +27,7 @@ public class RestData {
         map.put("status", 200);
         //map.put("message", "Respuesta de SpringBoot");
         try {
-            String s = "ANÁLISIS DE IMAGEN - RESULTADO: ";
+            String s = "ANÃ�LISIS DE IMAGEN - RESULTADO: ";
             System.out.println(System.getProperty("user.dir"));
             //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/ProyectoSkinner/RedCNN/Red2/CNN.py");
             //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/hello.py")	;
@@ -52,7 +52,7 @@ public class RestData {
             e.printStackTrace();
         }
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
+//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baï¿½o? sin luz? sta bien? anda?";
 	}
 	/*
 	@PostMapping("/AnalizarImagen")
@@ -61,7 +61,7 @@ public class RestData {
         map.put("status", 200);
         map.put("message", "Respuesta de SpringBoot, Imagen Recibida");
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
+//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baï¿½o? sin luz? sta bien? anda?";
 	}*/
 	
 	@PostMapping("/AnalizarImagen")
@@ -71,11 +71,12 @@ public class RestData {
 	try {
 
 			String imagenBase64 =image.get("image");
+			String parteDelCuerpo=image.get("bodypart");
 			//decoder(obj.getString("image") ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
 			decoder( imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
-			//MODIFICAR, PODRÍAMOS ENVIAR POR PARÁMETRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
+			//MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
 			//Y CREARLO CON EL MISMO NOMBRE
-
+				
 	        String s = null;
 	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
 	        String scriptDir = baseDir + "/label_image.py ";
