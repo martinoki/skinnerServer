@@ -1,4 +1,6 @@
 package com.proyecto.skinnerServer.rest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -7,8 +9,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +32,7 @@ public class RestData {
         map.put("status", 200);
         //map.put("message", "Respuesta de SpringBoot");
         try {
-            String s = "ANÁLISIS DE IMAGEN - RESULTADO: ";
+            String s = "ANÃ�LISIS DE IMAGEN - RESULTADO: ";
             System.out.println(System.getProperty("user.dir"));
             //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/ProyectoSkinner/RedCNN/Red2/CNN.py");
             //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/hello.py")	;
@@ -52,8 +57,7 @@ public class RestData {
             e.printStackTrace();
         }
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
-	}
+        }
 	/*
 	@PostMapping("/AnalizarImagen")
 	public Map<String, Object> analize(@RequestBody String image) {
@@ -61,32 +65,53 @@ public class RestData {
         map.put("status", 200);
         map.put("message", "Respuesta de SpringBoot, Imagen Recibida");
         return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del ba�o? sin luz? sta bien? anda?";
 	}*/
 	
 	@PostMapping("/AnalizarImagen")
 	public Map<String, Object> analize(@RequestBody Map<String, String> image) {
 	Map<String, Object> map = new HashMap<String, Object>();
 	
+	
 	try {
 
 			String imagenBase64 =image.get("image");
 			//decoder(obj.getString("image") ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
 			decoder( imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
-			//MODIFICAR, PODRÍAMOS ENVIAR POR PARÁMETRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
+			//MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
 			//Y CREARLO CON EL MISMO NOMBRE
 
 	        String s = null;
+	        String s2 = null;
 	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
 	        String scriptDir = baseDir + "/label_image.py ";
+	        String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
 	        String modelDir = "--graph=" + baseDir + "/retrained_graph.pb ";
 	        String labelDir = "--label=" + baseDir + "/retrained_labels.txt ";
-	        String file = "--image=" + baseDir + "/decoderimage.jpg ";
+	        String file = "--image=" + baseDir + "/decoderimage1.jpg ";
+	        String filename ="--image=" + baseDir +"/decoderimage1";
 	        //ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL DECODER
 	        //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
 	        Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
 	        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	        ObjectMapper mapper = new ObjectMapper();
 	        while((s = in.readLine())!=null){
+	        	
+	        	//Map<String, Double> results = mapper.readValue("{\"lunar\": 0.5513151, \"melanoma\": 0.4486848}", Map.class);
+	        	ExpressionParser parser = new SpelExpressionParser();
+	            Map<String,String> results = (Map) parser.parseExpression(s).getValue();
+	        	
+	        	String key = maxUsingIteration(results);
+	        	
+	        	if(key.equals("lunar")||key.equals("melanoma"))
+	        	{
+	        		Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
+	        		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+	        		while((s2 = in2.readLine())!=null){
+	        			String aux = s2.replaceAll("'", "\"");
+	        			List<Caracteristicas> resultado = mapper.readValue("[{\"pathImagen\": \"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\PaquinService\\skinnerServer/src/main/resources/network/decoderimage1 1 \", \"contenido\": {\"asimetria\": \"Asimetrico\", \"diametro\": 120}}]", new TypeReference<List<Caracteristicas>>(){});
+	        		}
+	        		
+	        	}
 	        map.put("message",s);
 	        }
 	       }
@@ -110,4 +135,61 @@ public class RestData {
 	     System.out.println("Exception while reading the Image " + ioe);
 	   }
 	 }
+	
+	public <K, V extends Comparable<V>> K maxUsingIteration(Map<K, V> map) {
+	    Map.Entry<K, V> maxEntry = null;
+	    for (Map.Entry<K, V> entry : map.entrySet()) {
+	        if (maxEntry == null || entry.getValue()
+	            .compareTo(maxEntry.getValue()) > 0) {
+	            maxEntry = entry;
+	        }
+	    }
+	    return maxEntry.getKey();
+	}
+	
+	
+public class Caracteristicas {
+		  private String pathImagen;
+		  private Map<String, Contenido> contenido;
+
+		 // Getter Methods 
+
+		  public String getPathImagen() {
+		    return pathImagen;
+		  }
+
+
+		 // Setter Methods 
+
+		  public void setPathImagen( String pathImagen ) {
+		    this.pathImagen = pathImagen;
+		  }
+
+		}
+
+		class Contenido {
+		  private String asimetria;
+		  private float diametro;
+
+
+		 // Getter Methods 
+
+		  public String getAsimetria() {
+		    return asimetria;
+		  }
+
+		  public float getDiametro() {
+		    return diametro;
+		  }
+
+		 // Setter Methods 
+
+		  public void setAsimetria( String asimetria ) {
+		    this.asimetria = asimetria;
+		  }
+
+		  public void setDiametro( float diametro ) {
+		    this.diametro = diametro;
+		  }
+		}
 }
