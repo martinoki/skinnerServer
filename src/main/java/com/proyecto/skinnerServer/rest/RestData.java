@@ -1,14 +1,18 @@
 package com.proyecto.skinnerServer.rest;
 
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 //@RequestMapping(path="/")
 public class RestData {
 	
+	 @Autowired
+	 JdbcTemplate jdbcTemplate;
+	 
+	
+	@GetMapping("/findall")
+	public List<Map<String,Object>> findAll(){
+	String sql = "SELECT * FROM usuarios";
+	return jdbcTemplate.queryForList(sql);
+	}
 	
 	@GetMapping("/")
 	public Map<String, Object> greeting() {
