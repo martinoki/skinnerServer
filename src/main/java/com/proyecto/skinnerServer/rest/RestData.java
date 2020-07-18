@@ -1,6 +1,7 @@
 package com.proyecto.skinnerServer.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -82,6 +83,8 @@ public class RestData {
 
 	        String s = null;
 	        String s2 = null;
+	        String path;
+			Contenido contenido;
 	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
 	        String scriptDir = baseDir + "/label_image.py ";
 	        String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
@@ -107,8 +110,13 @@ public class RestData {
 	        		Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
 	        		BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 	        		while((s2 = in2.readLine())!=null){
-	        			String aux = s2.replaceAll("'", "\"");
-	        			List<Caracteristicas> resultado = mapper.readValue("[{\"pathImagen\": \"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\PaquinService\\skinnerServer/src/main/resources/network/decoderimage1 1 \", \"contenido\": {\"asimetria\": \"Asimetrico\", \"diametro\": 120}}]", new TypeReference<List<Caracteristicas>>(){});
+	        			//String aux = s2.replaceAll("'", "\"");
+	        			//Caracteristicas[] data = new Gson().fromJson("[{'pathImagen': 'decoderimage1 ', 'contenido': {'asimetria': 'Asimetrico', 'diametro': 120}}]", Caracteristicas[].class);
+	        			Caracteristicas[] data = new Gson().fromJson(s2, Caracteristicas[].class);
+	        			
+	        			
+	        			path = data[0].getPathImagen();
+	        			contenido = data[0].getContenido();
 	        		}
 	        		
 	        	}
@@ -148,48 +156,54 @@ public class RestData {
 	}
 	
 	
-public class Caracteristicas {
+class Caracteristicas {
 		  private String pathImagen;
-		  private Map<String, Contenido> contenido;
+		  private Contenido contenido;
 
 		 // Getter Methods 
 
 		  public String getPathImagen() {
 		    return pathImagen;
 		  }
-
+		  
+		  public Contenido getContenido() {
+			    return contenido;
+		  }
 
 		 // Setter Methods 
 
 		  public void setPathImagen( String pathImagen ) {
 		    this.pathImagen = pathImagen;
 		  }
+		  
+		  public void setContenido(Contenido contenido) {
+			  this.contenido = contenido; 
+		  }
 
 		}
 
-		class Contenido {
-		  private String asimetria;
-		  private float diametro;
-
-
-		 // Getter Methods 
-
-		  public String getAsimetria() {
-		    return asimetria;
-		  }
-
-		  public float getDiametro() {
-		    return diametro;
-		  }
-
-		 // Setter Methods 
-
-		  public void setAsimetria( String asimetria ) {
-		    this.asimetria = asimetria;
-		  }
-
-		  public void setDiametro( float diametro ) {
-		    this.diametro = diametro;
-		  }
-		}
+class Contenido {
+	  private String asimetria;
+	  private float diametro;
+	  
+	 // Getter Methods 
+	
+	  public String getAsimetria() {
+	    return asimetria;
+	  }
+	
+	  public float getDiametro() {
+	    return diametro;
+	  }
+	
+	 // Setter Methods 
+	
+	  public void setAsimetria( String asimetria ) {
+	    this.asimetria = asimetria;
+	  }
+	
+	  public void setDiametro( float diametro ) {
+	    this.diametro = diametro;
+	  }
+}
 }
