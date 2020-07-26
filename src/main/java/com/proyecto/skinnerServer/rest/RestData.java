@@ -11,11 +11,17 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +34,48 @@ public class RestData {
 	
 	 @Autowired
 	 JdbcTemplate jdbcTemplate;
+	 private static DataSource dataSource;
 	 
 	
 	@GetMapping("/findall")
 	public List<Map<String,Object>> findAll(){
 	String sql = "SELECT * FROM usuarios";
 	return jdbcTemplate.queryForList(sql);
+	}
+	
+	@GetMapping("/tratamientos")
+		public List<Map<String,Object>> getTratamientos(){
+		String sql = "SELECT * FROM public.tratamientos";
+		return jdbcTemplate.queryForList(sql);
+	}
+	
+	@PutMapping("/tratamientos/{id}")
+		public Map<String,Object> editTratamiento(@RequestBody Map<String,Object> tratamientoData, @PathVariable("id") long id){
+		String sql = "UPDATE public.tratamientos SET id_tipo = %d, titulo ='%s', descripcion = '%s' WHERE id = %d RETURNING *";
+		sql = String.format(sql, tratamientoData.get("tipoLesion"), tratamientoData.get("titulo"), tratamientoData.get("descripcion"), id);
+		
+		jdbcTemplate.queryForList(sql);
+		Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", 200);
+        System.out.println();
+        return map;
+	}
+	
+	@PostMapping("/tratamientos")
+	public List<Map<String,Object>> insertTratamiento(@RequestBody Map<String,Object> tratamientoData){
+	String sql = "INSERT INTO public.tratamientos (id_tipo, titulo, descripcion) VALUES(%d, '%s', '%s') RETURNING id;";
+	sql = String.format(sql, tratamientoData.get("tipoLesion"), tratamientoData.get("titulo"), tratamientoData.get("descripcion"));
+	return jdbcTemplate.queryForList(sql);
+	}
+	
+	@DeleteMapping("/tratamientos/{id}")
+	public Map<String,Object> deleteTratamiento(@PathVariable("id") long id){
+		String sql = "delete from public.tratamientos where id = %d;";
+		sql = String.format(sql, id);
+		System.out.println(sql);
+		Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", 200);
+        return map;
 	}
 	
 	@GetMapping("/")
