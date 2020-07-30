@@ -1,12 +1,6 @@
-package com.proyecto.skinnerServer.rest;
+package com.proyecto.skinnerServer.users;
 
 import java.util.List;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,46 +18,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 //@RequestMapping(path="/")
-public class RestData {
+public class Users {
 	
 	 @Autowired
 	 JdbcTemplate jdbcTemplate;
 	 
 	
-	@GetMapping("/findall")
-	public List<Map<String,Object>> findAll(){
-	String sql = "SELECT * FROM usuarios";
-	return jdbcTemplate.queryForList(sql);
-	}
-	
-	@GetMapping("/tratamientos")
-		public List<Map<String,Object>> getTratamientos(){
-		String sql = "SELECT * FROM public.tratamientos";
+	@GetMapping("/usuarios")
+	public List<Map<String,Object>> getUsuarios(){
+		String sql = "SELECT * FROM usuarios";
 		return jdbcTemplate.queryForList(sql);
 	}
 	
-	@PutMapping("/tratamientos/{id}")
-		public Map<String,Object> editTratamiento(@RequestBody Map<String,Object> tratamientoData, @PathVariable("id") long id){
-		String sql = "UPDATE public.tratamientos SET id_tipo = %d, titulo ='%s', descripcion = '%s' WHERE id = %d RETURNING *";
-		sql = String.format(sql, tratamientoData.get("tipoLesion"), tratamientoData.get("titulo"), tratamientoData.get("descripcion"), id);
+	@PutMapping("/usuarios/{id}")
+		public Map<String,Object> editUsuario(@RequestBody Map<String,Object> usuarioData, @PathVariable("id") long id){
+		String sql = "UPDATE public.usuarios SET nombre = '%s', apellido = '%s', telefono = '%s', direccion = '%s', id_rol = %d WHERE id = %d RETURNING *";
+		sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("telefono"), usuarioData.get("direccion"), usuarioData.get("id_rol"), id);
 		
 		jdbcTemplate.queryForList(sql);
 		Map<String, Object> map = new HashMap<String, Object>();
         map.put("status", 200);
-        System.out.println();
         return map;
 	}
 	
-	@PostMapping("/tratamientos")
-	public List<Map<String,Object>> insertTratamiento(@RequestBody Map<String,Object> tratamientoData){
-	String sql = "INSERT INTO public.tratamientos (id_tipo, titulo, descripcion) VALUES(%d, '%s', '%s') RETURNING id;";
-	sql = String.format(sql, tratamientoData.get("tipoLesion"), tratamientoData.get("titulo"), tratamientoData.get("descripcion"));
+	@PostMapping("/usuarios")
+	public List<Map<String,Object>> insertUsuario(@RequestBody Map<String,Object> usuarioData){
+	String sql = "INSERT INTO public.usuarios (nombre, apellido, telefono, direccion, id_rol) VALUES('%s', '%s', '%s', '%s', %d) RETURNING id;";
+	sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("telefono"), usuarioData.get("direccion"), usuarioData.get("id_rol"));
 	return jdbcTemplate.queryForList(sql);
 	}
 	
-	@DeleteMapping("/tratamientos/{id}")
+	@DeleteMapping("/usuarios/{id}")
 	public Map<String,Object> deleteTratamiento(@PathVariable("id") long id){
-		String sql = "delete from public.tratamientos where id = %d;";
+		String sql = "UPDATE public.usuarios SET activo = false WHERE id = %d;";
 		sql = String.format(sql, id);
 		System.out.println(sql);
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -71,41 +58,8 @@ public class RestData {
         return map;
 	}
 	
-	@GetMapping("/")
-	public Map<String, Object> greeting() {
-		Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", 200);
-        //map.put("message", "Respuesta de SpringBoot");
-        try {
-            String s = "ANÃ�LISIS DE IMAGEN - RESULTADO: ";
-            System.out.println(System.getProperty("user.dir"));
-            //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/ProyectoSkinner/RedCNN/Red2/CNN.py");
-            //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/hello.py")	;
-            Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py")	;
-            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            System.out.println("Waiting for batch file ...");
-            try {
-				p.waitFor();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("TODO MAL ESPERANDO");
-			}
-            System.out.println("Batch file done.");
-            
-            while((s = in.readLine()) !=null){
-            	map.put("message", s);
-            	s = in.readLine();
-        	}
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-        return map;
-//		return "Son 5, chicos... sta bien? y los MP? ehh? sta bien? y si yo me saco la foto adentro del baï¿½o? sin luz? sta bien? anda?";
-	}
-	
-	@GetMapping("/paciente/{id}")
+	/*
+	@GetMapping("/usuarios/{id}")
 	public Map<String, Object> paciente(@PathVariable("id") long id) {
 		Map<String, Object> map = new HashMap<String, Object>();
         
@@ -119,53 +73,5 @@ public class RestData {
             
         
         return map;
-	}
-	
-	@PostMapping("/AnalizarImagen")
-	public Map<String, Object> analize(@RequestBody Map<String, String> image) {
-	Map<String, Object> map = new HashMap<String, Object>();
-	
-	try {
-
-			String imagenBase64 =image.get("image");
-			//String parteDelCuerpo=image.get("bodypart");
-			//decoder(obj.getString("image") ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
-			decoder( imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
-			//MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA EN LA APP
-			//Y CREARLO CON EL MISMO NOMBRE
-				
-	        String s = null;
-	        String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
-	        String scriptDir = baseDir + "/label_image.py ";
-	        String modelDir = "--graph=" + baseDir + "/retrained_graph.pb ";
-	        String labelDir = "--label=" + baseDir + "/retrained_labels.txt ";
-	        String file = "--image=" + baseDir + "/decoderimage.jpg ";
-	        //ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL DECODER
-	        //Process p = Runtime.getRuntime().exec("python3 " + System.getProperty("user.dir") + "/src/main/resources/network/CNN.py decoderimage");
-	        Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
-	        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	        while((s = in.readLine())!=null){
-	        map.put("message",s);
-	        }
-	       }
-	       catch(IOException e)
-	       {
-	        e.printStackTrace();
-	       }
-	       map.put("status", 200);
-	       
-	       return map;
-	}
-
-	public static void decoder(String base64Image, String pathFile) {
-	   try (FileOutputStream imageOutFile = new FileOutputStream(pathFile)) {
-	     // Converting a Base64 String into Image byte array
-	     byte[] imageByteArray = Base64.getMimeDecoder().decode(base64Image);
-	     imageOutFile.write(imageByteArray);
-	   } catch (FileNotFoundException e) {
-	     System.out.println("Image not found" + e);
-	   } catch (IOException ioe) {
-	     System.out.println("Exception while reading the Image " + ioe);
-	   }
-	 }
+	}*/
 }
