@@ -58,6 +58,12 @@ public class Users {
         return map;
 	}
 	
+	@GetMapping("/usuarios/{id}")
+	public List<Map<String,Object>> paciente(@PathVariable("id") long id) {
+		String sql = "SELECT * FROM usuarios WHERE id = " + id;
+		return jdbcTemplate.queryForList(sql);
+	}
+	
 	/*
 	@GetMapping("/usuarios/{id}")
 	public Map<String, Object> paciente(@PathVariable("id") long id) {
