@@ -1,4 +1,4 @@
-Comandos para utilizar:
+Comandos para utilizar: 
 
 Reentrenar la red:
 python retrain.py --bottleneck_dir=./bottlenecks --model_dir=./inception --output_labels=./retrained_labels.txt --output_graph=./retrained_graph.pb --image_dir=./training_images/
