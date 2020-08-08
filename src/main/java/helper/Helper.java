@@ -75,12 +75,11 @@ public class Helper {
 					}
 
 				}
-				map.put("message", s);
+				map.put("result", key);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		map.put("status", 200);
 
 		return map;
 	}
