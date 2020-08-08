@@ -60,10 +60,9 @@ public class Lesiones {
 	public Map<String,Object> insertLesion(@RequestBody Map<String,Object> lesionData){
 	Map<String, Object> tipo = Helper.analizarImagen(lesionData.get("imagen").toString());
 	String sql = "INSERT INTO public.lesiones (id_paciente, id_doctor, descripcion, id_tipo, ubicacion, fecha_creacion, imagen) "+
-			"VALUES(%d, %d, '%s', %d, '%s', '%s', '%s') RETURNING id;";
+			"VALUES(%d, %d, '%s', %d, '%s', '%s', '%s') RETURNING *;";
 	String select = "SELECT * from public.tipo_lesion WHERE descripcion ILIKE '" + tipo.get("result") + "'";
 	Map<String, Object> id_tipo = jdbcTemplate.queryForMap(select);
-	System.out.println(id_tipo);
 	sql = String.format(sql, lesionData.get("id_paciente"),  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  id_tipo.get("id"),  lesionData.get("ubicacion"),  lesionData.get("fecha_creacion"),  lesionData.get("imagen"));
 	Map<String, Object> result = jdbcTemplate.queryForMap(sql);
 	int id_lesion = (int)result.get("id");

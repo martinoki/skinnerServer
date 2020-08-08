@@ -56,10 +56,10 @@ public class Historial {
 	}
 	
 	@PostMapping("/historial")
-	public List<Map<String,Object>> insertHistorial(@RequestBody Map<String,Object> historialData){
+	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> historialData){
 		String sql = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id"; 
 		sql = String.format(sql, historialData.get("id_lesion"),  historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"));
-		return jdbcTemplate.queryForList(sql);
+		return jdbcTemplate.queryForMap(sql);
 	}
 	
 	@DeleteMapping("/historial/{id}")
