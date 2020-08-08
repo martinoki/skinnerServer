@@ -112,12 +112,12 @@ public class Helper {
 				path = data[0].getPathImagen();
 				contenido = data[0].getContenido();
 
-				map.put("message", s2);
+				map.put("asimetria", contenido.asimetria);
+				map.put("diametro", contenido.diametro);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		map.put("status", 200);
 
 		return map;
 	}

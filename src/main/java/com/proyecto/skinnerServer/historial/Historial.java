@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import helper.Helper;
+
 @RestController
 //@RequestMapping(path="/")
 public class Historial {
@@ -57,8 +59,13 @@ public class Historial {
 	
 	@PostMapping("/historial")
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> historialData){
-		String sql = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id"; 
-		sql = String.format(sql, historialData.get("id_lesion"),  historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(historialData.get("id_tipo").equals(1) || historialData.get("id_tipo").equals(4)) {
+		 result = Helper.analizarCaracteristicas(historialData.get("imagen").toString());
+		}
+		System.out.println(result.toString());
+		String sql = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha, analisis) VALUES(%d, %d, '%s', '%s', '%s', '%s') RETURNING id"; 
+		sql = String.format(sql, historialData.get("id_lesion"),  historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"), result.toString());
 		return jdbcTemplate.queryForMap(sql);
 	}
 	
