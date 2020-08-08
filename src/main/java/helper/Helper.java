@@ -1,4 +1,4 @@
-package com.proyecto.skinnerServer.rest;
+package helper;
 
 import java.util.List;
 
@@ -28,28 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
-@RestController
-//@RequestMapping(path="/")
-public class RestData {
+public class Helper {
 
-	@Autowired
-	JdbcTemplate jdbcTemplate;
-
-	@GetMapping("/findall")
-	public List<Map<String, Object>> findAll() {
-		String sql = "SELECT * FROM usuarios";
-		return jdbcTemplate.queryForList(sql);
-	}
-
-	@PostMapping("/AnalizarImagen")
-	public Map<String, Object> analize(@RequestBody Map<String, String> image) {
+	public static Map<String, Object> analizarImagen(String imagenBase64) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 
-			String imagenBase64 = image.get("image");
-			// decoder(obj.getString("image")
-			// ,"D:\\Users\\gomezcri\\Documents\\RepoSkinner\\ProyectoSkinner\\RedCNN\\Red2\\decoderimage.jpg");
 			decoder(imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
 			// MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA
 			// EN LA APP
@@ -68,31 +53,21 @@ public class RestData {
 			String filename = "--image=" + baseDir + "/decoderimage";
 			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
 			// DECODER
-			// Process p = Runtime.getRuntime().exec("python3 " +
-			// System.getProperty("user.dir") + "/src/main/resources/network/CNN.py
-			// decoderimage");
-			System.out.println("python3 " + scriptDir + modelDir + labelDir + file);
 			Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			ObjectMapper mapper = new ObjectMapper();
 			while ((s = in.readLine()) != null) {
 
-				// Map<String, Double> results = mapper.readValue("{\"lunar\": 0.5513151,
-				// \"melanoma\": 0.4486848}", Map.class);
 				ExpressionParser parser = new SpelExpressionParser();
 				Map<String, String> results = (Map) parser.parseExpression(s).getValue();
 
+				
 				String key = maxUsingIteration(results);
 
 				if (key.equals("lunar") || key.equals("melanoma")) {
-					System.out.println("python3 " + scriptDir2 + filename);
 					Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
 					BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 					while ((s2 = in2.readLine()) != null) {
-						// String aux = s2.replaceAll("'", "\"");
-						// Caracteristicas[] data = new Gson().fromJson("[{'pathImagen': 'decoderimage1
-						// ', 'contenido': {'asimetria': 'Asimetrico', 'diametro': 120}}]",
-						// Caracteristicas[].class);
 						Caracteristicas[] data = new Gson().fromJson(s2, Caracteristicas[].class);
 
 						path = data[0].getPathImagen();
@@ -101,6 +76,44 @@ public class RestData {
 
 				}
 				map.put("message", s);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		map.put("status", 200);
+
+		return map;
+	}
+	
+	public static Map<String, Object> analizarCaracteristicas(String imagenBase64) {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		try {
+
+			decoder(imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
+			// MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA
+			// EN LA APP
+			// Y CREARLO CON EL MISMO NOMBRE
+
+			String s = null;
+			String s2 = null;
+			String path;
+			Contenido contenido;
+			String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
+			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
+			String filename = "--image=" + baseDir + "/decoderimage";
+			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
+			// DECODER
+			
+			Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
+			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+			while ((s2 = in2.readLine()) != null) {
+				Caracteristicas[] data = new Gson().fromJson(s2, Caracteristicas[].class);
+
+				path = data[0].getPathImagen();
+				contenido = data[0].getContenido();
+
+				map.put("message", s2);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -122,7 +135,7 @@ public class RestData {
 		}
 	}
 
-	public <K, V extends Comparable<V>> K maxUsingIteration(Map<K, V> map) {
+	public static <K, V extends Comparable<V>> K maxUsingIteration(Map<K, V> map) {
 		Map.Entry<K, V> maxEntry = null;
 		for (Map.Entry<K, V> entry : map.entrySet()) {
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {

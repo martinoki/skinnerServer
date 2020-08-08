@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import helper.Helper;
+
 @RestController
 //@RequestMapping(path="/")
 public class Lesiones {
@@ -55,11 +57,18 @@ public class Lesiones {
 	}
 	
 	@PostMapping("/lesiones")
-	public List<Map<String,Object>> insertLesion(@RequestBody Map<String,Object> lesionData){
-	String sql = "INSERT INTO public.lesiones (id_paciente, id_doctor, descripcion, id_tipo, ubicacion, fecha_creacion) "+
-			"VALUES(%d, %d, '%s', %d, '%s', '%s') RETURNING id;"; 
-	sql = String.format(sql, lesionData.get("id_paciente"),  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("id_tipo"),  lesionData.get("ubicacion"),  lesionData.get("fecha_creacion"));
-	return jdbcTemplate.queryForList(sql);
+	public Map<String,Object> insertLesion(@RequestBody Map<String,Object> lesionData){
+	Map<String, Object> tipo = Helper.analizarImagen(lesionData.get("imagen").toString());
+	String sql = "INSERT INTO public.lesiones (id_paciente, id_doctor, descripcion, id_tipo, ubicacion, fecha_creacion, imagen) "+
+			"VALUES(%d, %d, '%s', %d, '%s', '%s', '%s') RETURNING id;"; 
+	sql = String.format(sql, lesionData.get("id_paciente"),  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("id_tipo"),  lesionData.get("ubicacion"),  lesionData.get("fecha_creacion"),  lesionData.get("imagen"));
+	Map<String, Object> result = jdbcTemplate.queryForMap(sql);
+	int id_lesion = (int)result.get("id");
+	
+	String sqlHistorial = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id"; 
+	sqlHistorial = String.format(sqlHistorial, id_lesion,  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("imagen"),  lesionData.get("fecha_creacion"));
+	jdbcTemplate.queryForMap(sqlHistorial);
+	return result;
 	}
 	
 	@DeleteMapping("/lesiones/{id}")
