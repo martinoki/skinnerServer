@@ -42,10 +42,10 @@ public class Users {
 	}
 	
 	@PostMapping("/usuarios")
-	public List<Map<String,Object>> insertUsuario(@RequestBody Map<String,Object> usuarioData){
+	public Map<String,Object> insertUsuario(@RequestBody Map<String,Object> usuarioData){
 	String sql = "INSERT INTO public.usuarios (nombre, apellido, telefono, direccion, id_rol) VALUES('%s', '%s', '%s', '%s', %d) RETURNING id;";
 	sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("telefono"), usuarioData.get("direccion"), usuarioData.get("id_rol"));
-	return jdbcTemplate.queryForList(sql);
+	return jdbcTemplate.queryForMap(sql);
 	}
 	
 	@DeleteMapping("/usuarios/{id}")

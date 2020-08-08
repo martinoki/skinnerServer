@@ -44,11 +44,11 @@ public class Tratamientos {
 	}
 
 	@PostMapping("/tratamientos")
-	public List<Map<String, Object>> insertTratamiento(@RequestBody Map<String, Object> tratamientoData) {
+	public Map<String, Object> insertTratamiento(@RequestBody Map<String, Object> tratamientoData) {
 		String sql = "INSERT INTO public.tratamientos (id_tipo, titulo, descripcion) VALUES(%d, '%s', '%s') RETURNING id;";
 		sql = String.format(sql, tratamientoData.get("tipoLesion"), tratamientoData.get("titulo"),
 				tratamientoData.get("descripcion"));
-		return jdbcTemplate.queryForList(sql);
+		return jdbcTemplate.queryForMap(sql);
 	}
 
 	@DeleteMapping("/tratamientos/{id}")
