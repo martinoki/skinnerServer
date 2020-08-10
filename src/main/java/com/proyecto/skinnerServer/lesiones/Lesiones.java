@@ -20,6 +20,7 @@ import helper.Helper;
 
 @RestController
 //@RequestMapping(path="/")
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
 public class Lesiones {
 	
 	 @Autowired
