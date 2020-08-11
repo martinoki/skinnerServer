@@ -38,14 +38,14 @@ public class Historial {
 	
 	@GetMapping("/historial/{id}")
 	public List<Map<String,Object>> getHistorialPorId(@PathVariable("id") long id){
-		String sql = "SELECT * FROM historial_lesion WHERE id= %d";
+		String sql = "SELECT * FROM historial_lesion WHERE id= %d order by fecha desc";
 		sql = String.format(sql, id);
 		return jdbcTemplate.queryForList(sql);
 	}
 	
 	@GetMapping("/historial/lesion/{id}")
 	public List<Map<String,Object>> getHistorialPorIdLesion(@PathVariable("id") long id){
-		String sql = "SELECT * FROM historial_lesion WHERE id_lesion = %d";
+		String sql = "SELECT * FROM historial_lesion WHERE id_lesion = %d order by fecha desc";
 		sql = String.format(sql, id);
 		return jdbcTemplate.queryForList(sql);
 	}
