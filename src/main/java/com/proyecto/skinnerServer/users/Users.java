@@ -32,7 +32,12 @@ public class Users {
 		String sql = "SELECT * FROM usuarios";
 		return jdbcTemplate.queryForList(sql);
 	}
-	
+	@GetMapping("/usuarios/notificaciones/{id}")
+	public int getLesionesPorPacienteCount(@PathVariable("id") long id){
+		String sql = "SELECT COUNT(*) FROM lesiones WHERE id_paciente = %d";
+		sql = String.format(sql, id);
+		return jdbcTemplate.queryForObject(sql,Integer.class);
+	}
 	@PutMapping("/usuarios/{id}")
 		public Map<String,Object> editUsuario(@RequestBody Map<String,Object> usuarioData, @PathVariable("id") long id){
 		String sql = "UPDATE public.usuarios SET nombre = '%s', apellido = '%s', telefono = '%s', direccion = '%s', id_rol = %d WHERE id = %d RETURNING *";
