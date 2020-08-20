@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import helper.UpdatableBCrypt;
+
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 public class Users {
 	
 	 @Autowired
@@ -32,6 +34,7 @@ public class Users {
 		String sql = "SELECT * FROM usuarios";
 		return jdbcTemplate.queryForList(sql);
 	}
+	
 	@GetMapping("/usuarios/notificaciones/{id}")
 	public int getLesionesPorPacienteCount(@PathVariable("id") long id){
 		String sql = "SELECT COUNT(*) FROM lesiones WHERE id_paciente = %d";
@@ -50,10 +53,61 @@ public class Users {
 	}
 	
 	@PostMapping("/usuarios")
-	public Map<String,Object> insertUsuario(@RequestBody Map<String,Object> usuarioData){
-	String sql = "INSERT INTO public.usuarios (nombre, apellido, telefono, direccion, id_rol) VALUES('%s', '%s', '%s', '%s', %d) RETURNING id;";
-	sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("telefono"), usuarioData.get("direccion"), usuarioData.get("id_rol"));
-	return jdbcTemplate.queryForMap(sql);
+		public Map<String,Object> insertUsuario(@RequestBody Map<String,Object> usuarioData){
+		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
+		String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d) RETURNING id;";
+		sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),  hasheador.hash(usuarioData.get("password").toString()), usuarioData.get("telefono"), usuarioData.get("direccion"), usuarioData.get("id_rol"));
+		return jdbcTemplate.queryForMap(sql);
+	}
+	
+	@GetMapping("/agenda/{id_usuario}")
+	public List<Map<String,Object>> getCitas(@PathVariable("id_usuario") int id_usuario){
+		Map<String,Object> userData = jdbcTemplate.queryForMap(String.format("SELECT id_rol FROM usuarios WHERE id = %d",id_usuario));
+		String sql = "SELECT * FROM agenda WHERE %s = %d";
+		if(userData.get("id_rol").equals(1)) {
+			sql = String.format(sql, "id_doctor", id_usuario);
+		}else {
+			sql = String.format(sql, "id_paciente", id_usuario);
+		}
+		return jdbcTemplate.queryForList(sql);
+	}
+	
+	@PostMapping("/agenda")
+	public Map<String,Object> insertCita(@RequestBody Map<String,Object> citaData){
+		String sql = "INSERT INTO agenda (id_paciente, id_doctor, titulo, fecha_inicio, fecha_fin) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id;";
+		sql = String.format(sql, citaData.get("id_paciente"), citaData.get("id_doctor"), citaData.get("titulo"),  citaData.get("fecha_inicio"), citaData.get("fecha_fin"));
+		return jdbcTemplate.queryForMap(sql);
+	}
+	
+	@DeleteMapping("/agenda/{id}")
+	public Map<String,Object> deleteCita(@PathVariable("id") long id){
+		String sql = "DELETE FROM agenda WHERE id = %d";
+		sql = String.format(sql, id);
+		System.out.println(sql);
+		jdbcTemplate.update(sql);
+		Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", 200);
+        return map;
+	}
+	
+	@PostMapping("/login")
+	public Map<String, Object> login(@RequestBody Map<String,Object> loginData){
+		Map<String, Object> response = new HashMap<String, Object>();
+		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
+		String sql = "SELECT * FROM public.usuarios WHERE email = '%s';";
+		sql = String.format(sql, loginData.get("email"));
+		List<Map<String, Object>> userData = jdbcTemplate.queryForList(sql);
+		if(userData.isEmpty()) {
+			response.put("message", "Usuario no encontrado");
+		}else {
+			Boolean passwordCorrect = hasheador.verifyHash(loginData.get("password").toString(), ((userData.get(0)).get("password")).toString());
+			if(passwordCorrect) {
+				return userData.get(0);
+			}else {
+				response.put("message", "Contraseña incorrecta");
+			}
+		}
+		return response;
 	}
 	
 	@DeleteMapping("/usuarios/{id}")
