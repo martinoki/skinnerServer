@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE})
 public class Tratamientos {
 
 	@Autowired
@@ -27,7 +27,7 @@ public class Tratamientos {
 
 	@GetMapping("/tratamientos")
 	public List<Map<String, Object>> getTratamientos() {
-		String sql = "SELECT * FROM public.tratamientos";
+		String sql = "SELECT a.id,b.descripcion as tipolesion,a.titulo,a.descripcion FROM public.tratamientos as a inner join public.tipo_lesion as b on a.id_tipo=b.id order by a.id_tipo";
 		return jdbcTemplate.queryForList(sql);
 	}
 
