@@ -60,36 +60,6 @@ public class Users {
 		return jdbcTemplate.queryForMap(sql);
 	}
 	
-	@GetMapping("/agenda/{id_usuario}")
-	public List<Map<String,Object>> getCitas(@PathVariable("id_usuario") int id_usuario){
-		Map<String,Object> userData = jdbcTemplate.queryForMap(String.format("SELECT id_rol FROM usuarios WHERE id = %d",id_usuario));
-		String sql = "SELECT id::VARCHAR, titulo as title, fecha_inicio as start, fecha_fin as end FROM agenda WHERE %s = %d";
-		if(userData.get("id_rol").equals(1)) {
-			sql = String.format(sql, "id_doctor", id_usuario);
-		}else {
-			sql = String.format(sql, "id_paciente", id_usuario);
-		}
-		return jdbcTemplate.queryForList(sql);
-	}
-	
-	@PostMapping("/agenda")
-	public Map<String,Object> insertCita(@RequestBody Map<String,Object> citaData){
-		String sql = "INSERT INTO agenda (id_paciente, id_doctor, titulo, fecha_inicio, fecha_fin) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id;";
-		sql = String.format(sql, citaData.get("id_paciente"), citaData.get("id_doctor"), citaData.get("titulo"),  citaData.get("fecha_inicio"), citaData.get("fecha_fin"));
-		return jdbcTemplate.queryForMap(sql);
-	}
-	
-	@DeleteMapping("/agenda/{id}")
-	public Map<String,Object> deleteCita(@PathVariable("id") long id){
-		String sql = "DELETE FROM agenda WHERE id = %d";
-		sql = String.format(sql, id);
-		System.out.println(sql);
-		jdbcTemplate.update(sql);
-		Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", 200);
-        return map;
-	}
-	
 	@PostMapping("/login")
 	public Map<String, Object> login(@RequestBody Map<String,Object> loginData){
 		Map<String, Object> response = new HashMap<String, Object>();
