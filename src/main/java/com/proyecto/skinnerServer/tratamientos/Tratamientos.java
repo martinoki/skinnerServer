@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 public class Tratamientos {
 
 	@Autowired
@@ -57,7 +57,8 @@ public class Tratamientos {
 	public Map<String, Object> deleteTratamiento(@PathVariable("id") long id) {
 		String sql = "delete from public.tratamientos where id = %d;";
 		sql = String.format(sql, id);
-		System.out.println(sql);
+		jdbcTemplate.update(sql);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		return map;
