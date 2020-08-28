@@ -27,7 +27,7 @@ public class Tratamientos {
 
 	@GetMapping("/tratamientos")
 	public List<Map<String, Object>> getTratamientos() {
-		String sql = "SELECT * FROM public.tratamientos";
+		String sql = "SELECT a.id,b.descripcion as tipolesion,a.titulo,a.descripcion FROM public.tratamientos as a inner join public.tipo_lesion as b on a.id_tipo=b.id order by a.id_tipo";
 		return jdbcTemplate.queryForList(sql);
 	}
 

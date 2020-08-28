@@ -63,7 +63,7 @@ public class Users {
 	@GetMapping("/agenda/{id_usuario}")
 	public List<Map<String,Object>> getCitas(@PathVariable("id_usuario") int id_usuario){
 		Map<String,Object> userData = jdbcTemplate.queryForMap(String.format("SELECT id_rol FROM usuarios WHERE id = %d",id_usuario));
-		String sql = "SELECT id, titulo, fecha_inicio, fecha_fin FROM agenda WHERE %s = %d";
+		String sql = "SELECT id::VARCHAR, titulo as title, fecha_inicio as start, fecha_fin as end FROM agenda WHERE %s = %d";
 		if(userData.get("id_rol").equals(1)) {
 			sql = String.format(sql, "id_doctor", id_usuario);
 		}else {
