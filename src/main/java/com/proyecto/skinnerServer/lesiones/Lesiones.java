@@ -35,6 +35,12 @@ public class Lesiones {
 		return jdbcTemplate.queryForList(sql);
 	}
 	
+	@GetMapping("/tipo_lesiones")
+	public List<Map<String,Object>> getTipoLesiones(){
+		String sql = "SELECT * FROM tipo_lesion";
+		return jdbcTemplate.queryForList(sql);
+	}
+	
 	@GetMapping("/lesiones/paciente/{id}")
 	public List<Map<String,Object>> getLesionesPorPaciente(@PathVariable("id") long id){
 		String sql = "SELECT * FROM lesiones WHERE id_paciente = %d";
