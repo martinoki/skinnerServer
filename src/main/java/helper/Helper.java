@@ -61,7 +61,7 @@ public class Helper {
 				ExpressionParser parser = new SpelExpressionParser();
 				Map<String, String> results = (Map) parser.parseExpression(s).getValue();
 
-				
+				map.put("analisis", results);
 				String key = maxUsingIteration(results);
 
 				if (key.equals("lunar") || key.equals("melanoma")) {

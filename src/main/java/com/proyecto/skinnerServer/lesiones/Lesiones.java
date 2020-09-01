@@ -68,11 +68,11 @@ public class Lesiones {
 	@PostMapping("/lesiones")
 	public Map<String,Object> insertLesion(@RequestBody Map<String,Object> lesionData){
 	Map<String, Object> tipo = Helper.analizarImagen(lesionData.get("imagen").toString());
-	String sql = "INSERT INTO public.lesiones (id_paciente, id_doctor, descripcion, id_tipo, ubicacion, fecha_creacion, imagen) "+
-			"VALUES(%d, %d, '%s', %d, '%s', '%s', '%s') RETURNING *;";
+	String sql = "INSERT INTO public.lesiones (id_paciente, id_doctor, descripcion, id_tipo, ubicacion, fecha_creacion, imagen, seccion, analisis) "+
+			"VALUES(%d, %d, '%s', %d, '%s', '%s', '%s', '%s', '%s') RETURNING *;";
 	String select = "SELECT * from public.tipo_lesion WHERE descripcion ILIKE '" + tipo.get("result") + "'";
 	Map<String, Object> id_tipo = jdbcTemplate.queryForMap(select);
-	sql = String.format(sql, lesionData.get("id_paciente"),  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  id_tipo.get("id"),  lesionData.get("ubicacion"),  lesionData.get("fecha_creacion"),  lesionData.get("imagen"));
+	sql = String.format(sql, lesionData.get("id_paciente"),  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  id_tipo.get("id"),  lesionData.get("ubicacion"),  lesionData.get("fecha_creacion"),  lesionData.get("imagen"), lesionData.get("seccion"), tipo.get("analisis").toString());
 	Map<String, Object> result = jdbcTemplate.queryForMap(sql);
 	int id_lesion = (int)result.get("id");
 	

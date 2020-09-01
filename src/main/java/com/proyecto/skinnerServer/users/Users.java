@@ -76,12 +76,16 @@ public Map<String, Object> login(@RequestBody Map<String,Object> loginData){
 	if(userData.isEmpty()) {
 		response.put("message", "Usuario no encontrado");
 	}else {
+		
 		Boolean passwordCorrect = hasheador.verifyHash(loginData.get("password").toString(), ((userData.get(0)).get("password")).toString());
 		if(passwordCorrect) {
-			return userData.get(0);
+			Map<String, Object> user = new HashMap<String, Object>(userData.get(0));
+			user.remove("password");
+			return user;
 		}else {
-			response.put("message", "Contraseña incorrecta");
+			response.put("message", "ContraseÃ±a incorrecta");
 		}
+		
 	}
 	return response;
 }
