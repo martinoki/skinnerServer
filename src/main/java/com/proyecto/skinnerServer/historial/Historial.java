@@ -53,8 +53,8 @@ public class Historial {
 	
 	@PutMapping("/historial/{id}")
 		public Map<String,Object> editHistorial(@RequestBody Map<String,Object> historialData, @PathVariable("id") long id){
-			String sql = "UPDATE historial_lesion SET id_doctor = %d, descripcion = '%s', imagen = '%s', fecha = '%s' WHERE id = %d RETURNING *";
-			sql = String.format(sql, historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"), id);
+			String sql = "UPDATE historial_lesion SET id_doctor = %d, analisis = '%s',descripcion = '%s', imagen = '%s', fecha = '%s' WHERE id = %d RETURNING *";
+			sql = String.format(sql, historialData.get("id_doctor"),  historialData.get("analisis"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"), id);
 			jdbcTemplate.queryForList(sql);
 			Map<String, Object> map = new HashMap<String, Object>();
 	        map.put("status", 200);
