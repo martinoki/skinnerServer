@@ -116,7 +116,7 @@ def run_graph(image_data, labels, input_layer_name, output_layer_name,
     for node_id in top_k:
       human_string = labels[node_id]
       score = predictions[node_id]
-      data[human_string] = score
+      data[human_string] = f"{score:.9f}"
       #print('%s (score = %.5f)' % (human_string, score))
     print(data)
     return 0

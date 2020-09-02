@@ -61,8 +61,12 @@ public class Helper {
 				ExpressionParser parser = new SpelExpressionParser();
 				Map<String, String> results = (Map) parser.parseExpression(s).getValue();
 
-				map.put("analisis", results);
+				map.put("analisis", results.toString().replace("=",":"));
 				String key = maxUsingIteration(results);
+				System.out.println(results.get(key));
+				if(Double.parseDouble(results.get(key)) < 0.66) {
+					key = "ninguna";
+				}
 
 				if (key.equals("lunar") || key.equals("melanoma")) {
 					Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
