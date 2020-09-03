@@ -78,7 +78,8 @@ public class Lesiones {
 	
 	String sqlHistorial = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id"; 
 	sqlHistorial = String.format(sqlHistorial, id_lesion,  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("imagen"),  lesionData.get("fecha_creacion"));
-	jdbcTemplate.queryForMap(sqlHistorial);
+	Map<String, Object> historial = jdbcTemplate.queryForMap(sqlHistorial);
+	result.put("id_historial", historial.get("id"));
 	return result;
 	}
 	
