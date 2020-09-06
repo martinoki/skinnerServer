@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+		RequestMethod.DELETE })
 public class Tratamientos {
 
 	@Autowired
@@ -58,7 +60,33 @@ public class Tratamientos {
 		String sql = "delete from public.tratamientos where id = %d;";
 		sql = String.format(sql, id);
 		jdbcTemplate.update(sql);
-		
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", 200);
+		return map;
+	}
+
+	/************** LESIONES TRATAMIENTOS **************/
+
+	@GetMapping("/lesion_tratamientos/{id_lesion}")
+	public List<Map<String, Object>> getTratamientosAsignados(@PathVariable("id_lesion") long id) {
+		String sql = "SELECT * FROM lesiones_tratamientos lt JOIN tratamientos t ON lt.id_tratamiento = t.id WHERE lt.id_lesion = %d";
+		sql = String.format(sql, id);
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	@PostMapping("/lesion_tratamientos")
+	public Map<String, Object> insertLesionTratamiento(@RequestBody Map<String, Object> tratamientoData) {
+		String sql = "INSERT INTO lesiones_tratamientos (id_lesion, id_tratamiento, fecha_creacion) VALUES(%d, '%s', NOW()::timestamp) RETURNING id;";
+		sql = String.format(sql, tratamientoData.get("id_lesion"), tratamientoData.get("id_tratamiento"));
+		return jdbcTemplate.queryForMap(sql);
+	}
+	
+	@DeleteMapping("/lesion_tratamientos/{id}")
+	public Map<String, Object> deleteLesionTratamiento(@PathVariable("id") long id) {
+		String sql = "DELETE from public.lesiones_tratamientos WHERE id = %d;";
+		sql = String.format(sql, id);
+		jdbcTemplate.update(sql);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 200);
 		return map;
