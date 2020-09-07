@@ -77,7 +77,7 @@ public class Tratamientos {
 
 	@PostMapping("/lesion_tratamientos")
 	public Map<String, Object> insertLesionTratamiento(@RequestBody Map<String, Object> tratamientoData) {
-		String sql = "INSERT INTO lesiones_tratamientos (id_lesion, id_tratamiento, fecha_creacion) VALUES(%d, '%s', NOW()::timestamp) RETURNING id;";
+		String sql = "INSERT INTO lesiones_tratamientos (id_lesion, id_tratamiento, fecha_creacion) VALUES(%d, %d, NOW()::timestamp) RETURNING id;";
 		sql = String.format(sql, tratamientoData.get("id_lesion"), tratamientoData.get("id_tratamiento"));
 		return jdbcTemplate.queryForMap(sql);
 	}

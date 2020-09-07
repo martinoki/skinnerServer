@@ -44,16 +44,17 @@ public class Helper {
 			String s2 = null;
 			String path;
 			Contenido contenido;
-			String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
-			String scriptDir = baseDir + "/label_image.py ";
-			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
-			String modelDir = "--graph=" + baseDir + "/retrained_graph.pb ";
-			String labelDir = "--label=" + baseDir + "/retrained_labels.txt ";
-			String file = "--image=" + baseDir + "/decoderimage.jpg ";
-			String filename = "--image=" + baseDir + "/decoderimage";
+			String baseDir = "\""+System.getProperty("user.dir") + "/src/main/resources/network";
+			String scriptDir = baseDir + "/label_image.py\" " ;
+			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py\" ";
+			String modelDir = "--graph=" + baseDir + "/retrained_graph.pb\" ";
+			String labelDir = "--label=" + baseDir + "/retrained_labels.txt\" ";
+			String file = "--image=" + baseDir + "/decoderimage.jpg\" ";
+			String filename = "--image=" + baseDir + "/decoderimage\" ";
 			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
 			// DECODER
 			Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
+			//Process p = Runtime.getRuntime().exec("python3 " + scriptDir);
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			ObjectMapper mapper = new ObjectMapper();
 			while ((s = in.readLine()) != null) {
