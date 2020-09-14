@@ -43,6 +43,13 @@ public class Asignaciones {
 		return jdbcTemplate.queryForList(sql);
 	}
 	
+	@GetMapping("/asignaciones/count/{id_doctor}")
+	public List<Map<String,Object>> getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
+		String sql = "SELECT a.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id WHERE id_doctor = %d AND a.aprobado is null";
+		sql = String.format(sql, id_doctor);
+		return jdbcTemplate.queryForList(sql);
+	}
+	
 	@PutMapping("/asignaciones/{id}")
 		public Map<String,Object> editAginacion(@RequestBody Map<String,Object> asignacionData, @PathVariable("id") long id){
 			String sql = "UPDATE asignaciones SET aprobado = %d, fecha_modificacion WHERE id = NOW()::timestamp RETURNING *";
