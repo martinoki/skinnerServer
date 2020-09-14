@@ -114,6 +114,9 @@ public class Users {
 			if (passwordCorrect) {
 				Map<String, Object> user = new HashMap<String, Object>(userData.get(0));
 				user.remove("password");
+				sql = "UPDATE public.usuarios SET token = '%s' WHERE id = %d;";
+				sql = String.format(sql, loginData.get("token"), user.get("id"));
+				jdbcTemplate.update(sql);
 				return user;
 			} else {
 				response.put("message", "Contraseña incorrecta");
