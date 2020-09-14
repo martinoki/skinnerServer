@@ -91,10 +91,10 @@ public class Users {
 	@PostMapping("/usuarios")
 	public Map<String, Object> insertUsuario(@RequestBody Map<String, Object> usuarioData) {
 		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
-		String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d) RETURNING id;";
+		String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol, id_ciudad) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d, %d) RETURNING id;";
 		sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),
 				hasheador.hash(usuarioData.get("password").toString()), usuarioData.get("telefono"),
-				usuarioData.get("direccion"), usuarioData.get("id_rol"));
+				usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("id_ciudad"));
 		return jdbcTemplate.queryForMap(sql);
 	}
 
