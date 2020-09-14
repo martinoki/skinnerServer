@@ -38,7 +38,7 @@ public class Asignaciones {
 	
 	@GetMapping("/asignaciones/{id_doctor}")
 	public List<Map<String,Object>> getAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id WHERE id_doctor = %d";
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d";
 		sql = String.format(sql, id_doctor);
 		return jdbcTemplate.queryForList(sql);
 	}
