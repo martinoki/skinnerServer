@@ -32,7 +32,7 @@ public class Recomendaciones {
 	@GetMapping("/recomendaciones")
 	public List<Map<String, Object>> getRecomendaciones() {
 
-		String sql = "SELECT a.id,a.id_tipo, b.descripcion as tipolesion, a.titulo FROM recomendaciones as a inner join public.tipo_lesion as b on a.id_tipo=b.id";
+		String sql = "SELECT a.id,a.id_tipo, b.descripcion as tipolesion, a.titulo, a.descripcion FROM recomendaciones as a inner join public.tipo_lesion as b on a.id_tipo=b.id";
 		return jdbcTemplate.queryForList(sql);
 	}
 
@@ -71,9 +71,10 @@ public class Recomendaciones {
 
 	@DeleteMapping("/recomendaciones/{id}")
 	public Map<String, Object> deleteRecomendacion(@PathVariable("id") long id) {
-		String sql = "DELETE FROM public.recomendaciones false WHERE id = %d;";
+		String sql = "DELETE FROM public.recomendaciones WHERE id = %d;";
 		sql = String.format(sql, id);
 		Map<String, Object> map = new HashMap<String, Object>();
+		jdbcTemplate.update(sql);
 		map.put("status", 200);
 		return map;
 	}
