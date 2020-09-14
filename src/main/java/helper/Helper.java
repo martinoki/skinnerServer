@@ -14,6 +14,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +28,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.RequestMapping;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.proyecto.skinnerServer.users.Post;
 
 public class Helper {
+
+	public static void enviarNotificacion(String token) {
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.set("Authorization",
+				"key=AAAARYSOvWI:APA91bG8B0d18HRFyXyTKT9K3CsZ7eCZ9lVJ9FJONeJiW0gVWqhYbn4uL60NSFWQUJb6vbZapuEtmzUBpo5hWHOKlujPnv6FP92TuPKgGW3FGftZjUyq0C2JW6IZJs9Bw9By9owxCqy_");
+		headers.set("Content-Type", "application/json");
+
+		String url = "https://fcm.googleapis.com/fcm/send";
+		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> notification = new HashMap<>();
+		notification.put("body", "A VER SI ANDA ESTE MENSAJE DE MIERDA");
+		notification.put("title", "TITULO DEL MENSAJITO");
+		map.put("to", token);
+		map.put("collapse_key", "type_a");
+		map.put("notification", notification);
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+		ResponseEntity<Post> response = restTemplate.exchange(url, HttpMethod.POST, entity, Post.class);
+	}
 
 	public static Map<String, Object> analizarImagen(String imagenBase64) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -44,8 +70,8 @@ public class Helper {
 			String s2 = null;
 			String path;
 			Contenido contenido;
-			String baseDir = "\""+System.getProperty("user.dir") + "/src/main/resources/network";
-			String scriptDir = baseDir + "/label_image.py\" " ;
+			String baseDir = "\"" + System.getProperty("user.dir") + "/src/main/resources/network";
+			String scriptDir = baseDir + "/label_image.py\" ";
 			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py\" ";
 			String modelDir = "--graph=" + baseDir + "/retrained_graph.pb\" ";
 			String labelDir = "--label=" + baseDir + "/retrained_labels.txt\" ";
@@ -54,7 +80,7 @@ public class Helper {
 			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
 			// DECODER
 			Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
-			//Process p = Runtime.getRuntime().exec("python3 " + scriptDir);
+			// Process p = Runtime.getRuntime().exec("python3 " + scriptDir);
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			ObjectMapper mapper = new ObjectMapper();
 			while ((s = in.readLine()) != null) {
@@ -62,10 +88,10 @@ public class Helper {
 				ExpressionParser parser = new SpelExpressionParser();
 				Map<String, String> results = (Map) parser.parseExpression(s).getValue();
 
-				map.put("analisis", results.toString().replace("=",":"));
+				map.put("analisis", results.toString().replace("=", ":"));
 				String key = maxUsingIteration(results);
 				System.out.println(results.get(key));
-				if(Double.parseDouble(results.get(key)) < 0.66) {
+				if (Double.parseDouble(results.get(key)) < 0.66) {
 					key = "ninguna";
 				}
 
@@ -88,7 +114,7 @@ public class Helper {
 
 		return map;
 	}
-	
+
 	public static Map<String, Object> analizarCaracteristicas(String imagenBase64) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -108,7 +134,7 @@ public class Helper {
 			String filename = "--image=" + baseDir + "/decoderimage";
 			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
 			// DECODER
-			
+
 			Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
 			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 			while ((s2 = in2.readLine()) != null) {
