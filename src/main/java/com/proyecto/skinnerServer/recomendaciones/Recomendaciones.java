@@ -31,7 +31,8 @@ public class Recomendaciones {
 
 	@GetMapping("/recomendaciones")
 	public List<Map<String, Object>> getRecomendaciones() {
-		String sql = "SELECT * FROM recomendaciones";
+
+		String sql = "SELECT a.id,a.id_tipo, b.descripcion as tipolesion, a.titulo FROM recomendaciones as a inner join public.tipo_lesion as b on a.id_tipo=b.id";
 		return jdbcTemplate.queryForList(sql);
 	}
 
