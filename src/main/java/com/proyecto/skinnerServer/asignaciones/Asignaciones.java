@@ -22,7 +22,7 @@ import helper.Helper;
 
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 
 public class Asignaciones {
 	
@@ -38,21 +38,21 @@ public class Asignaciones {
 	
 	@GetMapping("/asignaciones/{id_doctor}")
 	public List<Map<String,Object>> getAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d";
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d AND a.aprobado is null";
 		sql = String.format(sql, id_doctor);
 		return jdbcTemplate.queryForList(sql);
 	}
 	
 	@GetMapping("/asignaciones/count/{id_doctor}")
-	public List<Map<String,Object>> getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id WHERE id_doctor = %d AND a.aprobado is null";
+	public int getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
+		String sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND aprobado is null";
 		sql = String.format(sql, id_doctor);
-		return jdbcTemplate.queryForList(sql);
+		return jdbcTemplate.queryForObject(sql, Integer.class);
 	}
 	
 	@PutMapping("/asignaciones/{id}")
 		public Map<String,Object> editAginacion(@RequestBody Map<String,Object> asignacionData, @PathVariable("id") long id){
-			String sql = "UPDATE asignaciones SET aprobado = %d, fecha_modificacion WHERE id = NOW()::timestamp RETURNING *";
+			String sql = "UPDATE asignaciones SET aprobado = %b, fecha_modificacion= NOW()::timestamp WHERE id = %d RETURNING  *";
 			sql = String.format(sql, asignacionData.get("aprobado"), id);
 			jdbcTemplate.queryForList(sql);
 			Map<String, Object> map = new HashMap<String, Object>();
