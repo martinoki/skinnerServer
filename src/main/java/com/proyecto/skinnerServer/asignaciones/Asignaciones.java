@@ -59,7 +59,11 @@ public class Asignaciones {
 				sql = "SELECT token FROM usuarios WHERE id = %d";
 				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_paciente").toString()));
 				String token = jdbcTemplate.queryForObject(sql, String.class);
-				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue aprobada");				
+				String resultadoSolicitud = "rechazada";
+				if((boolean)asignacionData.get("aprobado") == true) {
+					resultadoSolicitud = "aprobada";
+				}
+				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue ".concat(resultadoSolicitud));				
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 	        map.put("status", 200);
