@@ -54,7 +54,13 @@ public class Asignaciones {
 		public Map<String,Object> editAginacion(@RequestBody Map<String,Object> asignacionData, @PathVariable("id") long id){
 			String sql = "UPDATE asignaciones SET aprobado = %b, fecha_modificacion= NOW()::timestamp WHERE id = %d RETURNING  *";
 			sql = String.format(sql, asignacionData.get("aprobado"), id);
-			jdbcTemplate.queryForList(sql);
+			List<Map<String,Object>> lista = jdbcTemplate.queryForList(sql);
+			if(!lista.isEmpty()) {
+				sql = "SELECT token FROM usuarios WHERE id = %d";
+				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_paciente").toString()));
+				String token = jdbcTemplate.queryForObject(sql, String.class);
+				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue aprobada");				
+			}
 			Map<String, Object> map = new HashMap<String, Object>();
 	        map.put("status", 200);
 	        return map;

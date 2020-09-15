@@ -13,6 +13,6 @@ public class ScheduledTasks {
 	@Scheduled(fixedRate = 5000)
 	public void reportCurrentTime() {
 		String data = "The time is now " + (dateFormat.format(new Date())).toString();
-		System.out.println(data);
+		//System.out.println(data);
 	}
 }

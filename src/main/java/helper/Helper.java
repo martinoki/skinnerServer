@@ -36,7 +36,7 @@ import com.proyecto.skinnerServer.users.Post;
 
 public class Helper {
 
-	public static void enviarNotificacion(String token) {
+	public static void enviarNotificacion(String token, String title, String body) {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.set("Authorization",
@@ -46,8 +46,8 @@ public class Helper {
 		String url = "https://fcm.googleapis.com/fcm/send";
 		Map<String, Object> map = new HashMap<>();
 		Map<String, Object> notification = new HashMap<>();
-		notification.put("body", "A VER SI ANDA ESTE MENSAJE DE MIERDA");
-		notification.put("title", "TITULO DEL MENSAJITO");
+		notification.put("title", title);
+		notification.put("body", body);
 		map.put("to", token);
 		map.put("collapse_key", "type_a");
 		map.put("notification", notification);
