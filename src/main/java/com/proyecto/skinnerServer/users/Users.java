@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,8 +23,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.proyecto.skinnerServer.api.email.EmailBody;
+import com.proyecto.skinnerServer.api.email.EmailPort;
+
+import helper.Helper;
 import helper.UpdatableBCrypt;
+import helper.passwordGenerator;
 
 @RestController
 //@RequestMapping(path="/")
@@ -91,11 +98,19 @@ public class Users {
 	@PostMapping("/usuarios")
 	public Map<String, Object> insertUsuario(@RequestBody Map<String, Object> usuarioData) {
 		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
-		String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol, id_ciudad) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d, %d) RETURNING id;";
-		sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),
-				hasheador.hash(usuarioData.get("password").toString()), usuarioData.get("telefono"),
-				usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("id_ciudad"));
-		return jdbcTemplate.queryForMap(sql);
+		String sqlSelect = "SELECT * FROM public.usuarios WHERE email = '%s';";
+		sqlSelect = String.format(sqlSelect, usuarioData.get("email"));
+		List<Map<String, Object>> userData = jdbcTemplate.queryForList(sqlSelect);
+		if (userData.isEmpty()) {
+			String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol, id_ciudad) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d, %d) RETURNING id;";
+			sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),
+					hasheador.hash(usuarioData.get("password").toString()), usuarioData.get("telefono"),
+					usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("id_ciudad"));
+			return jdbcTemplate.queryForMap(sql);
+		}else {
+			throw new ResponseStatusException(
+			          HttpStatus.BAD_REQUEST, "El usuario ya existe");			
+		}
 	}
 
 	@PostMapping("/login")
@@ -123,6 +138,55 @@ public class Users {
 			}
 
 		}
+		return response;
+	}
+	
+	@Autowired
+	private EmailPort emailPort;
+	
+	@PostMapping("/recuperar_password")
+	public Map<String, Object> recuperarPassword(@RequestBody Map<String, Object> recoveryData) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		String email = recoveryData.get("email").toString();
+		String sql = "SELECT * FROM public.usuarios WHERE email = '%s';";
+		sql = String.format(sql, email);
+		List<Map<String, Object>> user = jdbcTemplate.queryForList(sql);
+		if (user.isEmpty()) {
+			response.put("message", "Usuario no encontrado");
+		}else {
+		String newPassword = passwordGenerator.generatePassword();
+		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
+		String hashedPass = hasheador.hash(newPassword);
+		sql = "UPDATE public.usuarios SET password = '%s' WHERE email = '%s';";
+		sql = String.format(sql, hashedPass, email);
+		jdbcTemplate.update(sql);
+		EmailBody emailBody = new EmailBody(email, "Su nueva contraseña es: ".concat(newPassword), "SkinnerApp - Recuperar contraseña");
+		emailPort.sendEmail(emailBody);
+		response.put("status", 200);
+		response.put("message", "Usuario actualizado correctamente");
+		}
+		/*
+		String sql = "SELECT * FROM public.usuarios WHERE email = '%s';";
+		sql = String.format(sql, loginData.get("email"));
+		List<Map<String, Object>> userData = jdbcTemplate.queryForList(sql);
+		if (userData.isEmpty()) {
+			response.put("message", "Usuario no encontrado");
+		} else {
+
+			Boolean passwordCorrect = hasheador.verifyHash(loginData.get("password").toString(),
+					((userData.get(0)).get("password")).toString());
+			if (passwordCorrect) {
+				Map<String, Object> user = new HashMap<String, Object>(userData.get(0));
+				user.remove("password");
+				sql = "UPDATE public.usuarios SET token = '%s' WHERE id = %d;";
+				sql = String.format(sql, loginData.get("token"), user.get("id"));
+				jdbcTemplate.update(sql);
+				return user;
+			} else {
+				response.put("message", "Contraseña incorrecta");
+			}
+
+		}*/
 		return response;
 	}
 

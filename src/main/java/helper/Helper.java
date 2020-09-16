@@ -1,6 +1,5 @@
 package helper;
 
-import java.util.List;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,23 +10,12 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,9 +36,14 @@ public class Helper {
 		Map<String, Object> notification = new HashMap<>();
 		notification.put("title", title);
 		notification.put("body", body);
+		Map<String, Object> data = new HashMap<>();
+		data.put("title", title);
+		data.put("body", body);
+		
 		map.put("to", token);
 		map.put("collapse_key", "type_a");
 		map.put("notification", notification);
+		map.put("data", data);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 		ResponseEntity<Post> response = restTemplate.exchange(url, HttpMethod.POST, entity, Post.class);
