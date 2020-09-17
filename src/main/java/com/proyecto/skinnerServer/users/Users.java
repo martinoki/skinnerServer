@@ -233,9 +233,9 @@ public class Users {
 	}
 
 	@GetMapping("/usuarios/{id}")
-	public List<Map<String, Object>> paciente(@PathVariable("id") long id) {
+	public Map<String, Object> paciente(@PathVariable("id") long id) {
 		String sql = "SELECT * FROM usuarios WHERE id = " + id;
-		return jdbcTemplate.queryForList(sql);
+		return jdbcTemplate.queryForMap(sql);
 	}
 	
 	@PutMapping("/cerrar_sesion/{id}")
