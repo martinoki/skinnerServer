@@ -94,6 +94,27 @@ public class Users {
 		map.put("status", 200);
 		return map;
 	}
+	
+	@PutMapping("/cambiar_password/{id}")
+	public Map<String, Object> usuarioData(@RequestBody Map<String, Object> request, @PathVariable("id") long id) {
+		
+		String sqlSelect = "SELECT * FROM public.usuarios WHERE id = %d;";
+		sqlSelect = String.format(sqlSelect, id);
+		Map<String, Object> user = jdbcTemplate.queryForMap(sqlSelect);
+		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
+		boolean passwordCorrect = hasheador.verifyHash(request.get("password").toString(), user.get("password").toString());
+		if(passwordCorrect == true) {
+			String hashedPassword = hasheador.hash(request.get("new_password").toString());
+			String sql = "UPDATE public.usuarios SET password = '%s' WHERE id = %d RETURNING *";
+			sql = String.format(sql, hashedPassword, id);
+			return jdbcTemplate.queryForMap(sql);
+		}
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mensaje", "Contraseña incorrecta");
+		map.put("status", 400);
+		return map;
+	}
 
 	@PostMapping("/usuarios")
 	public Map<String, Object> insertUsuario(@RequestBody Map<String, Object> usuarioData) {

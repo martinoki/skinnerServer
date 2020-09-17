@@ -33,16 +33,12 @@ public class Helper {
 
 		String url = "https://fcm.googleapis.com/fcm/send";
 		Map<String, Object> map = new HashMap<>();
-		Map<String, Object> notification = new HashMap<>();
-		notification.put("title", title);
-		notification.put("body", body);
 		Map<String, Object> data = new HashMap<>();
 		data.put("title", title);
 		data.put("body", body);
 		
 		map.put("to", token);
 		map.put("collapse_key", "type_a");
-		map.put("notification", notification);
 		map.put("data", data);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
