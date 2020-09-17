@@ -189,6 +189,17 @@ public class Users {
 		}*/
 		return response;
 	}
+	
+	@PutMapping("/actualizar_password/{id}")
+	public Map<String, Object> actualizarPassword(@RequestBody Map<String, Object> passwordData, @PathVariable("id") long id) {
+		String newPassword = passwordData.get("password").toString();
+		UpdatableBCrypt hasheador = new UpdatableBCrypt(5);
+		String hashedPass = hasheador.hash(newPassword);
+		String sql = "UPDATE public.usuarios SET password = '%s' WHERE id = %d RETURNING id";
+		sql = String.format(sql, hashedPass, id);
+		Map<String,Object> newUserData = jdbcTemplate.queryForMap(sql);
+		return newUserData;
+	}
 
 	@DeleteMapping("/usuarios/{id}")
 	public Map<String, Object> deleteTratamiento(@PathVariable("id") long id) {
