@@ -237,5 +237,11 @@ public class Users {
 		String sql = "SELECT * FROM usuarios WHERE id = " + id;
 		return jdbcTemplate.queryForList(sql);
 	}
+	
+	@PutMapping("/cerrar_sesion/{id}")
+	public void cerrarSesion(@PathVariable("id") long id) {
+		String sql = "UPDATE usuarios SET token = null WHERE id = " + id;
+		jdbcTemplate.update(sql);
+	}
 
 }
