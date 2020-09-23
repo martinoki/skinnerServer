@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.expression.ExpressionParser;
@@ -36,8 +37,27 @@ public class Helper {
 		Map<String, Object> data = new HashMap<>();
 		data.put("title", title);
 		data.put("body", body);
-		
 		map.put("to", token);
+		map.put("collapse_key", "type_a");
+		map.put("data", data);
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+		ResponseEntity<Post> response = restTemplate.exchange(url, HttpMethod.POST, entity, Post.class);
+	}
+	
+	public static void enviarMultiplesNotificaciones(List<String> token, String title, String body) {
+		HttpHeaders headers = new HttpHeaders();
+
+		headers.set("Authorization",
+				"key=AAAARYSOvWI:APA91bG8B0d18HRFyXyTKT9K3CsZ7eCZ9lVJ9FJONeJiW0gVWqhYbn4uL60NSFWQUJb6vbZapuEtmzUBpo5hWHOKlujPnv6FP92TuPKgGW3FGftZjUyq0C2JW6IZJs9Bw9By9owxCqy_");
+		headers.set("Content-Type", "application/json");
+
+		String url = "https://fcm.googleapis.com/fcm/send";
+		Map<String, Object> map = new HashMap<>();
+		Map<String, Object> data = new HashMap<>();
+		data.put("title", title);
+		data.put("body", body);
+		map.put("registration_ids", token);
 		map.put("collapse_key", "type_a");
 		map.put("data", data);
 		RestTemplate restTemplate = new RestTemplate();

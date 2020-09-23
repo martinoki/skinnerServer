@@ -1,0 +1,105 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f99213050ad, pid=187791, tid=187823
+#
+# JRE version: OpenJDK Runtime Environment (11.0.8+10) (build 11.0.8+10-post-Ubuntu-0ubuntu120.04)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.8+10-post-Ubuntu-0ubuntu120.04, mixed mode, sharing, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libjimage.so+0x30ad]
+#
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/share/apport/apport %p %s %c %d %P %E" (or dumping to /home/martin/unlam/proyecto_final/skinnerServer/core.187791)
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.launchpad.net/ubuntu/+source/openjdk-lts
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:39581 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=39363 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Djava.security.egd=file:/dev/./urandom -Xverify:none -XX:TieredStopAtLevel=1 -Dspring.boot.project.name=skinnerServer -javaagent:/home/martin/Descargas/sts-4.6.2.RELEASE/configuration/org.eclipse.osgi/239/0/.cp/lib/javaagent-shaded.jar -Dfile.encoding=UTF-8 com.proyecto.skinnerServer.SkinnerServerApplication --spring.output.ansi.enabled=always
+
+Host: Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 8 cores, 7G, Ubuntu 20.04.1 LTS
+Time: Wed Sep 16 23:48:06 2020 -03 elapsed time: 326 seconds (0d 0h 5m 26s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f991c625800):  JavaThread "RMI TCP Accept-39363" daemon [_thread_in_vm, id=187823, stack(0x00007f98d37f8000,0x00007f98d38f9000)]
+
+Stack: [0x00007f98d37f8000,0x00007f98d38f9000],  sp=0x00007f98d38f6220,  free space=1016k
+Native frames: (J=compiled Java code, A=aot compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libjimage.so+0x30ad]
+C  [libjimage.so+0x3da2]
+C  [libjimage.so+0x42b1]  JIMAGE_FindResource+0xf1
+V  [libjvm.so+0x57f201]
+V  [libjvm.so+0x5819b1]
+V  [libjvm.so+0xcec03d]
+V  [libjvm.so+0xceabca]
+V  [libjvm.so+0xced18b]
+V  [libjvm.so+0x62f46e]
+V  [libjvm.so+0x81bac6]
+j  sun.rmi.transport.tcp.TCPTransport$AcceptLoop.executeAcceptLoop()V+68 java.rmi@11.0.8
+j  sun.rmi.transport.tcp.TCPTransport$AcceptLoop.run()V+1 java.rmi@11.0.8
+j  java.lang.Thread.run()V+11 java.base@11.0.8
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x824499]
+V  [libjvm.so+0x822aee]
+V  [libjvm.so+0x8cbb81]
+V  [libjvm.so+0xd22dcf]
+V  [libjvm.so+0xd1f430]
+V  [libjvm.so+0xb8f706]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  sun.rmi.transport.tcp.TCPTransport$AcceptLoop.executeAcceptLoop()V+68 java.rmi@11.0.8
+j  sun.rmi.transport.tcp.TCPTransport$AcceptLoop.run()V+1 java.rmi@11.0.8
+j  java.lang.Thread.run()V+11 java.base@11.0.8
+v  ~StubRoutines::call_stub
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x00007f9913909cc8
+
+Register to memory mapping:
+
+RAX=0x0000000000001f2b is an unknown value
+RBX=0x00007f98d38f62d1 is pointing into the stack for thread: 0x00007f991c625800
+RCX=0x00007f98d38f630d is pointing into the stack for thread: 0x00007f991c625800
+RDX=0x0000000000001f2b is an unknown value
+RSP=0x00007f98d38f6220 is pointing into the stack for thread: 0x00007f991c625800
+RBP=0x00007f98d38f6240 is pointing into the stack for thread: 0x00007f991c625800
+RSI=0x0 is NULL
+RDI=0x00007f992130a030: <offset 0x0000000000008030> in /usr/lib/jvm/java-11-openjdk-amd64/lib/libjimage.so at 0x00007f9921302000
+R8 =0x00007f991390201c is an unknown value
+R9 =0x00007f98d38f70e0 is pointing into the stack for thread: 0x00007f991c625800
+R10=0x00007f99225d6e08: <offset 0x0000000000e46e08> in /usr/lib/jvm/java-11-openjdk-amd64/lib/server/libjvm.so at 0x00007f9921790000
+R11=0x00007f98d38f7448 is pointing into the stack for thread: 0x00007f991c625800
+R12=0x00000000000083bc is an unknown value
+R13=0x00007f98d38f62d0 is pointing into the stack for thread: 0x00007f991c625800
+R14=0x0 is NULL
+R15=0x00007f98d80b7c80 points into unknown readable memory: 73 75 6e 2f 72 6d 69 2f
+
+
+Registers:
+RAX=0x0000000000001f2b, RBX=0x00007f98d38f62d1, RCX=0x00007f98d38f630d, RDX=0x0000000000001f2b
+RSP=0x00007f98d38f6220, RBP=0x00007f98d38f6240, RSI=0x0000000000000000, RDI=0x00007f992130a030
+R8 =0x00007f991390201c, R9 =0x00007f98d38f70e0, R10=0x00007f99225d6e08, R11=0x00007f98d38f7448
+R12=0x00000000000083bc, R13=0x00007f98d38f62d0, R14=0x0000000000000000, R15=0x00007f98d80b7c80
+RIP=0x00007f99213050ad, EFLAGS=0x0000000000010246, CSGSFS=0x002b000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f98d38f6220)
+0x00007f98d38f6220:   0000000000000000 00007f98d38f7368
+0x00007f98d38f6230:   00007f991c009840 00007f98d38f62d0
+0x00007f98d38f6240:   00007f98d38f62b0 00007f9921305da2
+0x00007f98d38f6250:   0000000000000000 0000000000000000 
+
+Instructions: (pc=0x00007f99213050ad)
+0x00007f9921304fad:   f3 ff ff 44 03 65 90 e9 3f fe ff ff 0f 1f 80 00
+0x00007f9921304fbd:   00 00 00 41 8b 10 41 89 55 00 41 8b 54 00 fc 41
+0x00007f9921304fcd:   89 54 05 fc e9 82 fc ff ff 66 2e 0f 1f 84 00 00
+0x00007f9921304fdd:   00 00 00 b9 0a 00 00 00 e9 f0 fc ff ff 41 0f b7
+0x00007f9921304fed:   54 00 fe 66 41 89 54 05 fe e9 5d fc ff ff 0f 1f
+0x00007f9921304ffd:   44 00 00 f3 0f 1e fa 0f b6 17 89 f0 89 f1 4c 8d
+0x00007f992130500d:   47 01 84 d2 74 1c 0f 1f 44 00 00 69 c9 93 01 00
+0x00007f992130501d:   01 49 83 c0 01 31 d1 41 0f b6 50 ff 84 d2 75 eb
+0x00007f992130502d:   89 c8 25 ff ff ff 7f c3 90 66 2e 0f 1f 84 00 00
+0x00007f992130503d:   00 00 00 f3 0f 1e fa 48 85 d2 0f 84 da 00 00 00
+0x00007f992130504d:   55 48 89 e5 41 55 41 54 41 89 cc 53 48 83 ec 08
+0x00007f992130505d:   85 c9 0f 84 ba 00 00 00 49 89 f5 48 8d 5e 01 
