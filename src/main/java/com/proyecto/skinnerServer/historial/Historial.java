@@ -70,7 +70,10 @@ public class Historial {
 		System.out.println(result.toString());
 		String sql = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha, analisis) VALUES(%d, %d, '%s', '%s', '%s', '%s') RETURNING id"; 
 		sql = String.format(sql, historialData.get("id_lesion"),  historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"), result.toString());
-		return jdbcTemplate.queryForMap(sql);
+		Map<String, Object> historial = jdbcTemplate.queryForMap(sql);
+		String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), historialData.get("imagen").toString());
+		jdbcTemplate.update(queryAdicionales);
+		return historial;
 	}
 	
 	@DeleteMapping("/historial/{id}")

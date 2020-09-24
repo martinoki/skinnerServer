@@ -1,7 +1,7 @@
 package helper;
 
-
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +27,6 @@ import com.google.gson.Gson;
 import com.proyecto.skinnerServer.users.Post;
 
 public class Helper {
-
 	public static void enviarNotificacion(String token, String title, String body) {
 		HttpHeaders headers = new HttpHeaders();
 
@@ -44,7 +46,7 @@ public class Helper {
 		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 		ResponseEntity<Post> response = restTemplate.exchange(url, HttpMethod.POST, entity, Post.class);
 	}
-	
+
 	public static void enviarMultiplesNotificaciones(List<String> token, String title, String body) {
 		HttpHeaders headers = new HttpHeaders();
 
@@ -151,15 +153,85 @@ public class Helper {
 
 				path = data[0].getPathImagen();
 				contenido = data[0].getContenido();
-
 				map.put("asimetria", contenido.asimetria);
 				map.put("diametro", contenido.diametro);
+				int idx = 1;
+				for (Caracteristicas item : data) {
+					String imagenRecortada = item.getPathImagen().concat("Recortada.png");
+					byte[] fileContent = FileUtils.readFileToByteArray(new File(imagenRecortada));
+					String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+					String imagenBorde = item.getPathImagen().concat("Borde.png");
+					fileContent = FileUtils.readFileToByteArray(new File(imagenBorde));
+					encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+					String imagenColor = item.getPathImagen().concat("Color.png");
+					fileContent = FileUtils.readFileToByteArray(new File(imagenColor));
+					encodedString = Base64.getEncoder().encodeToString(fileContent);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return map;
+	}
+
+	
+	public static String agregarAdicionales(int id_historial, String imagenBase64) {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		try {
+
+			decoder(imagenBase64, System.getProperty("user.dir") + "/src/main/resources/network/" + "decoderimage.jpg");
+			// MODIFICAR, PODRÃ�AMOS ENVIAR POR PARÃ�METRO EL NOMBRE DEL ARCHIVO QUE SE CREA
+			// EN LA APP
+			// Y CREARLO CON EL MISMO NOMBRE
+
+			String s = null;
+			String s2 = null;
+			String path;
+			Contenido contenido;
+			String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
+			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
+			String filename = "--image=" + baseDir + "/decoderimage";
+			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
+			// DECODER
+
+			Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
+			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+			String sqlInsert = "INSERT INTO adicionales (id_historial, imagen, tipo, id_tipo) VALUES ";
+			while ((s2 = in2.readLine()) != null) {
+				Caracteristicas[] data = new Gson().fromJson(s2, Caracteristicas[].class);
+				map.put("id_historial", id_historial);
+
+				int idx = 1;
+				for (Caracteristicas item : data) {
+					String imagenRecortada = item.getPathImagen().concat("Recortada.png");
+					byte[] fileContent = FileUtils.readFileToByteArray(new File(imagenRecortada));
+					String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+					sqlInsert += "(" + id_historial + ", '" + encodedString + "'," + "'Recortada'" + "," + idx + "),";
+
+					String imagenBorde = item.getPathImagen().concat("Borde.png");
+					fileContent = FileUtils.readFileToByteArray(new File(imagenBorde));
+					encodedString = Base64.getEncoder().encodeToString(fileContent);
+					sqlInsert += "(" + id_historial + ", '" + encodedString + "', " + "'Borde'" + "," + idx + "),";
+
+					String imagenColor = item.getPathImagen().concat("Color.png");
+					fileContent = FileUtils.readFileToByteArray(new File(imagenColor));
+					encodedString = Base64.getEncoder().encodeToString(fileContent);
+					sqlInsert += "(" + id_historial + ", '" + encodedString + "', " + "'Color'" + "," + idx + "),";
+					
+					idx++;
+				}
+				sqlInsert = sqlInsert.substring(0, sqlInsert.length() - 1);
+			}
+			return sqlInsert;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	public static void decoder(String base64Image, String pathFile) {
