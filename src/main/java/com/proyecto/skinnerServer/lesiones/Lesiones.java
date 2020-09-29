@@ -48,6 +48,13 @@ public class Lesiones {
 		return jdbcTemplate.queryForList(sql);
 	}
 	
+	@GetMapping("/lesiones/usuarios/{id}")
+	public List<Map<String,Object>> getUsuarioPorIdLesion(@PathVariable("id") long id){
+		String sql = "SELECT id_paciente,id_doctor FROM lesiones WHERE id = %d";
+		sql = String.format(sql, id);
+		return jdbcTemplate.queryForList(sql);
+	}
+	
 	@GetMapping("/lesiones/{id}")
 	public List<Map<String,Object>> getLesionPorId(@PathVariable("id") long id){
 		String sql = "SELECT * FROM lesiones WHERE id = %d";
