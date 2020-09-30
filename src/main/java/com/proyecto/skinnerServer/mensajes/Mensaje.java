@@ -36,19 +36,26 @@ public class Mensaje {
 		return jdbcTemplate.queryForList(sql);
 	}*/
 	
-	@GetMapping("/mensajes/{idLesion}")
-	public List<Map<String,Object>> getMensajesById(@PathVariable("idLesion") long id){
-		String sql = "SELECT a.id_origen_usuario, a.id_destino_usuario,a.mensaje,a.fecha,b.nombre as nombre_origen,b.apellido as apellido_origen,c.nombre as nombre_destino,c.apellido as apellido_destino FROM mensajes a join usuarios b on a.id_origen_usuario=b.id join usuarios c on a.id_destino_usuario=c.id WHERE id_lesion= %d order by fecha asc";
-		sql = String.format(sql, id);
-		return jdbcTemplate.queryForList(sql);
-	}
-	
-	
-	@PostMapping("/mensajes")
-	public Map<String,Object> insertMensajes(@RequestBody Map<String,Object> mensajesData){
-		String sql = "INSERT INTO mensajes (id_origen_usuario, id_destino_usuario, mensaje, fecha, id_lesion) VALUES(%d, %d, '%s', now()::timestamp, %d) RETURNING id"; 
-		sql = String.format(sql, mensajesData.get("id_origen_usuario"),  mensajesData.get("id_destino_usuario"),  mensajesData.get("mensaje"),  mensajesData.get("id_lesion"));
-		return jdbcTemplate.queryForMap(sql);
-	}
+		@GetMapping("/mensajes/{idLesion}")
+		public List<Map<String,Object>> getMensajesById(@PathVariable("idLesion") long id){
+			String sql = "SELECT a.id_origen_usuario, a.id_destino_usuario,a.mensaje,a.fecha,b.nombre as nombre_origen,b.apellido as apellido_origen,c.nombre as nombre_destino,c.apellido as apellido_destino FROM mensajes a join usuarios b on a.id_origen_usuario=b.id join usuarios c on a.id_destino_usuario=c.id WHERE id_lesion= %d order by fecha asc";
+			sql = String.format(sql, id);
+			return jdbcTemplate.queryForList(sql);
+		}
+		
+		
+		@PostMapping("/mensajes")
+		public Map<String,Object> insertMensajes(@RequestBody Map<String,Object> mensajesData){
+			String sql = "INSERT INTO mensajes (id_origen_usuario, id_destino_usuario, mensaje, fecha, id_lesion) VALUES(%d, %d, '%s', now()::timestamp, '%d') RETURNING id"; 
+			sql = String.format(sql, mensajesData.get("id_origen_usuario"),  mensajesData.get("id_destino_usuario"),  mensajesData.get("mensaje"),  mensajesData.get("id_lesion"));
+			return jdbcTemplate.queryForMap(sql);
+		}
+		
+		@GetMapping("/mensajes/paciente/{idPaciente}")
+		public List<Map<String,Object>> getMensajesByIdPaciente(@PathVariable("idPaciente") long id){
+			String sql = "SELECT a.id_origen_usuario, a.id_lesion, MAX(a.fecha) as fecha,MAX(c.nombre) as nombre_destino,MAX(c.apellido) as apellido_destino,MAX(a.mensaje) as mensaje,MAX(a.id_destino_usuario) as id_destino_usuario FROM mensajes a join usuarios c on a.id_destino_usuario=c.id WHERE a.id_origen_usuario= %d GROUP BY a.id_origen_usuario, a.id_lesion ORDER BY MAX(a.fecha) DESC";
+			sql = String.format(sql, id);
+			return jdbcTemplate.queryForList(sql);
+		}
 	
 }
