@@ -51,4 +51,11 @@ public class Mensaje {
 		return jdbcTemplate.queryForMap(sql);
 	}
 	
+	@GetMapping("/mensajes/paciente/{idPaciente}")
+	public List<Map<String,Object>> getMensajesByIdPaciente(@PathVariable("idPaciente") long id){
+		String sql = "SELECT a.id_origen_usuario, a.id_lesion, MAX(a.fecha) as fecha,MAX(c.nombre) as nombre_destino,MAX(c.apellido) as apellido_destino,MAX(a.mensaje) as mensaje,MAX(a.id_destino_usuario) as id_destino_usuario FROM mensajes a join usuarios c on a.id_destino_usuario=c.id WHERE a.id_origen_usuario= %d GROUP BY a.id_origen_usuario, a.id_lesion ORDER BY MAX(a.fecha) DESC";
+		sql = String.format(sql, id);
+		return jdbcTemplate.queryForList(sql);
+	}
+	
 }
