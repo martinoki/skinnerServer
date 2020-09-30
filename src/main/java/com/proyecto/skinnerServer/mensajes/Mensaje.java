@@ -46,7 +46,7 @@ public class Mensaje {
 	
 	@PostMapping("/mensajes")
 	public Map<String,Object> insertMensajes(@RequestBody Map<String,Object> mensajesData){
-		String sql = "INSERT INTO mensajes (id_origen_usuario, id_destino_usuario, mensaje, fecha, id_lesion) VALUES(%d, %d, '%s', now()::timestamp, '%d') RETURNING id"; 
+		String sql = "INSERT INTO mensajes (id_origen_usuario, id_destino_usuario, mensaje, fecha, id_lesion) VALUES(%d, %d, '%s', now()::timestamp, %d) RETURNING id"; 
 		sql = String.format(sql, mensajesData.get("id_origen_usuario"),  mensajesData.get("id_destino_usuario"),  mensajesData.get("mensaje"),  mensajesData.get("id_lesion"));
 		return jdbcTemplate.queryForMap(sql);
 	}

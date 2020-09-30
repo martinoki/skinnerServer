@@ -22,7 +22,7 @@ import helper.Helper;
 
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
 public class Lesiones {
 	
 	 @Autowired
@@ -57,7 +57,7 @@ public class Lesiones {
 	
 	@GetMapping("/lesiones/{id}")
 	public List<Map<String,Object>> getLesionPorId(@PathVariable("id") long id){
-		String sql = "SELECT * FROM lesiones WHERE id = %d";
+		String sql = "SELECT a.id_paciente,a.id_doctor,a.descripcion,a.id_tipo,a.ubicacion,a.fecha_creacion,a.activo,a.imagen,a.seccion,a.analisis,b.descripcion as nombreLesion FROM lesiones a join tipo_lesion b on a.id_tipo=b.id WHERE a.id = %d";
 		sql = String.format(sql, id);
 		return jdbcTemplate.queryForList(sql);
 	}

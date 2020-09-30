@@ -79,12 +79,13 @@ return listaResultadoAgrupado;
 //BLAME LUQUI
 	}
 
-	@DeleteMapping("/adicionales/{id}")
-	public Map<String,Object> deleteAdicional(@PathVariable("id") long id){
-		String sql = "delete from adicionales WHERE id = %d;";
-		sql = String.format(sql, id);
+	@DeleteMapping("/adicionales/{id}/{id_tipo}")
+	public Map<String,Object> deleteAdicional(@PathVariable("id") long id,@PathVariable("id_tipo") long id_tipo){
+		String sql = "delete from adicionales WHERE id_historial = %d and id_tipo= %d;";
+		sql = String.format(sql, id,id_tipo);
 		Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", 200);
-        return map;
+		jdbcTemplate.update(sql);
+		map.put("status", 200);
+		return map;
 	}
 }
