@@ -246,5 +246,19 @@ public class Users {
 		String sql = "UPDATE usuarios SET token = null WHERE id = " + id;
 		jdbcTemplate.update(sql);
 	}
+	
+	@PutMapping("/recibir_notificacion/{id}")
+	public void recibirNotificacion(@PathVariable("id") int id, @RequestBody Map<String, Object> data) {
+		String sql = "UPDATE usuarios SET recibir_notificaciones = %b WHERE id = %d" ;
+		sql = String.format(sql, data.get("estado"), id);
+		jdbcTemplate.update(sql);
+	}
+	
+	@GetMapping("/notificacion_habilitada/{id}")
+	public Map<String, Object> recibirNotificacion(@PathVariable("id") int id) {
+		String sql = "SELECT recibir_notificaciones FROM usuarios WHERE id = %d" ;
+		sql = String.format(sql, id);
+		return jdbcTemplate.queryForMap(sql);
+	}
 
 }
