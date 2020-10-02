@@ -37,46 +37,37 @@ public class Adicional {
 	public List<Map<String,Object>> getAsignacionesPorId(@PathVariable("id") long id){
 		String sql = "SELECT * FROM adicionales WHERE id_historial= %d order by id_tipo asc";
 		sql = String.format(sql, id);
-		List<Map<String,Object>>listaResultado= jdbcTemplate.queryForList(sql);
-		List<Map<String,Object>>listaResultadoAgrupado = new ArrayList<Map<String,Object>>();
-       	Map<String,Object> grupo=new HashMap<String, Object>();
-		int idx = 1;
-		for (Map<String,Object> item : listaResultado) {
-				if(idx==(int)item.get("id_tipo")) {
-            	grupo.put("id_tipo", (int)item.get("id_tipo"));
-            	if(item.get("tipo").toString().equals("Borde")) {
-                	grupo.put("borde",item.get("imagen"));
-            	}
-            	if(item.get("tipo").toString().equals("Color")) {
-                	grupo.put("color",item.get("imagen"));
-            	}
-            	if(item.get("tipo").toString().equals("Recortada")) {
-                	grupo.put("recortada",item.get("imagen"));
-            	}
-            }
-            else {
-            	idx++;
-            	listaResultadoAgrupado.add(grupo);
-                    grupo=new HashMap<String, Object>();
+		List<Map<String, Object>> listaResultado = jdbcTemplate.queryForList(sql);
+		List<Map<String, Object>> listaResultadoAgrupado = new ArrayList<Map<String, Object>>();
+		Map<String, Object> grupo = new HashMap<String, Object>();
 
-	            	grupo.put("id_tipo", (int)item.get("id_tipo"));
-	            	if(item.get("tipo").toString().equals("Borde")) {
-	                	grupo.put("borde",item.get("imagen"));
-	            	}
-	            	if(item.get("tipo").toString().equals("Color")) {
-	                	grupo.put("color",item.get("imagen"));
-	            	}
-	            	if(item.get("tipo").toString().equals("Recortada")) {
-	                	grupo.put("recortada",item.get("imagen"));
-	            	}
-	            
-            }
-
+		int count = 0;
+		
+		for (Map<String, Object> item : listaResultado) {
+				count++;
+				grupo.put("id_tipo", (int) item.get("id_tipo"));
+				if (item.get("tipo").toString().equals("Borde")) {
+					grupo.put("borde", item.get("imagen"));
+				}
+				if (item.get("tipo").toString().equals("Color")) {
+					grupo.put("color", item.get("imagen"));
+				}
+				if (item.get("tipo").toString().equals("Recortada")) {
+					grupo.put("recortada", item.get("imagen"));
+				}
+				
+				if(count == 3) {
+					count = 0;
+					listaResultadoAgrupado.add(grupo);
+					grupo = new HashMap<String, Object>();
+				}
+				
+				
 		}
-    	listaResultadoAgrupado.add(grupo);
-return listaResultadoAgrupado;
-//TODO Hacer un mejor codigo By:luqui
-//BLAME LUQUI
+		if (!grupo.isEmpty()) {
+			listaResultadoAgrupado.add(grupo);
+		}
+		return listaResultadoAgrupado;
 	}
 
 	@DeleteMapping("/adicionales/{id}/{id_tipo}")

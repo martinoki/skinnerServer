@@ -76,6 +76,13 @@ public class Users {
 		return jdbcTemplate.queryForList(sql, id_rol);
 	}
 
+	@GetMapping("/pacientes/{id}")
+	public List<Map<String, Object>> getUsuariosByMedico(@PathVariable("id") long id) {
+		String sql = "select distinct u.* from asignaciones a2 join usuarios u on a2.id_paciente=u.id where a2.id_doctor=?";
+		return jdbcTemplate.queryForList(sql, id);
+	}
+
+	
 	@GetMapping("/usuarios/notificaciones/{id}")
 	public int getLesionesPorPacienteCount(@PathVariable("id") long id) {
 		String sql = "SELECT COUNT(*) FROM lesiones WHERE id_paciente = %d";
