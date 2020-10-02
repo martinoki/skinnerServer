@@ -124,10 +124,18 @@ public class Users {
 		List<Map<String, Object>> userData = jdbcTemplate.queryForList(sqlSelect);
 		if (userData.isEmpty()) {
 			String sql = "INSERT INTO public.usuarios (nombre, apellido, email, password, telefono, direccion, id_rol, id_ciudad) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %d, %d) RETURNING id;";
+			String password = passwordGenerator.generatePassword();
+			if(usuarioData.containsKey("password")) {
+				password = usuarioData.get("password").toString();
+			}
+			EmailBody emailBody = new EmailBody(usuarioData.get("email").toString(), "Se ha creado un nuevo usuario para este mail con la contraseña: ".concat(password), "SkinnerApp - Creacion de usuario");
+			emailPort.sendEmail(emailBody);
 			sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),
-					hasheador.hash(usuarioData.get("password").toString()), usuarioData.get("telefono"),
+					hasheador.hash(password), usuarioData.get("telefono"),
 					usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("id_ciudad"));
-			return jdbcTemplate.queryForMap(sql);
+			Map<String, Object> response = jdbcTemplate.queryForMap(sql);
+			response.put("password", password);
+			return response;
 		}else {
 			throw new ResponseStatusException(
 			          HttpStatus.BAD_REQUEST, "El usuario ya existe");			
