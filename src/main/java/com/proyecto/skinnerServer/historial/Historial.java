@@ -72,7 +72,9 @@ public class Historial {
 		sql = String.format(sql, historialData.get("id_lesion"),  historialData.get("id_doctor"),  historialData.get("descripcion"),  historialData.get("imagen"),  historialData.get("fecha"), result.toString());
 		Map<String, Object> historial = jdbcTemplate.queryForMap(sql);
 		String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), historialData.get("imagen").toString());
-		jdbcTemplate.update(queryAdicionales);
+		if(!queryAdicionales.equals("")) {
+			jdbcTemplate.update(queryAdicionales);			
+		}
 		return historial;
 	}
 	

@@ -201,6 +201,7 @@ public class Helper {
 			Process p2 = Runtime.getRuntime().exec("python3 " + scriptDir2 + filename);
 			BufferedReader in2 = new BufferedReader(new InputStreamReader(p2.getInputStream()));
 			String sqlInsert = "INSERT INTO adicionales (id_historial, imagen, tipo, id_tipo) VALUES ";
+			String values = "";
 			while ((s2 = in2.readLine()) != null) {
 				Caracteristicas[] data = new Gson().fromJson(s2, Caracteristicas[].class);
 				map.put("id_historial", id_historial);
@@ -211,23 +212,27 @@ public class Helper {
 					byte[] fileContent = FileUtils.readFileToByteArray(new File(imagenRecortada));
 					String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
-					sqlInsert += "(" + id_historial + ", '" + encodedString + "'," + "'Recortada'" + "," + idx + "),";
+					values += "(" + id_historial + ", '" + encodedString + "'," + "'Recortada'" + "," + idx + "),";
 
 					String imagenBorde = item.getPathImagen().concat("Borde.png");
 					fileContent = FileUtils.readFileToByteArray(new File(imagenBorde));
 					encodedString = Base64.getEncoder().encodeToString(fileContent);
-					sqlInsert += "(" + id_historial + ", '" + encodedString + "', " + "'Borde'" + "," + idx + "),";
+					values += "(" + id_historial + ", '" + encodedString + "', " + "'Borde'" + "," + idx + "),";
 
 					String imagenColor = item.getPathImagen().concat("Color.png");
 					fileContent = FileUtils.readFileToByteArray(new File(imagenColor));
 					encodedString = Base64.getEncoder().encodeToString(fileContent);
-					sqlInsert += "(" + id_historial + ", '" + encodedString + "', " + "'Color'" + "," + idx + "),";
+					values += "(" + id_historial + ", '" + encodedString + "', " + "'Color'" + "," + idx + "),";
 					
 					idx++;
 				}
-				sqlInsert = sqlInsert.substring(0, sqlInsert.length() - 1);
+				values = values.substring(0, sqlInsert.length() - 1);
 			}
-			return sqlInsert;
+			if(values.equals("")) {
+				return "";
+			}else {
+				return sqlInsert + values;				
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

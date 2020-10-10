@@ -88,7 +88,9 @@ public class Lesiones {
 	Map<String, Object> historial = jdbcTemplate.queryForMap(sqlHistorial);
 	result.put("id_historial", historial.get("id"));
 	String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), lesionData.get("imagen").toString());
-	jdbcTemplate.update(queryAdicionales);
+	if(!queryAdicionales.equals("")) {
+		jdbcTemplate.update(queryAdicionales);			
+	}
 	return result;
 	}
 	
