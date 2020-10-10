@@ -62,6 +62,9 @@ public class Asignaciones {
 				String resultadoSolicitud = "rechazada";
 				if((boolean)asignacionData.get("aprobado") == true) {
 					resultadoSolicitud = "aprobada";
+					String updateQuery = "UPDATE lesiones SET id_doctor = %d WHERE id = %d";
+					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lesion"));
+					jdbcTemplate.update(updateQuery);
 				}
 				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue ".concat(resultadoSolicitud));				
 			}
