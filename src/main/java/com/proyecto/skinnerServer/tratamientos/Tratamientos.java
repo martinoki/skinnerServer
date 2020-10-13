@@ -32,6 +32,13 @@ public class Tratamientos {
 		String sql = "SELECT a.id, a.id_tipo, b.descripcion as tipolesion,a.titulo,a.descripcion FROM public.tratamientos as a inner join public.tipo_lesion as b on a.id_tipo=b.id order by a.id_tipo";
 		return jdbcTemplate.queryForList(sql);
 	}
+	
+	@GetMapping("/tratamientos/{id_tipo}")
+	public List<Map<String, Object>> getTratamientosByTipo(@PathVariable("id_tipo") long id_tipo) {
+		String sql = "SELECT a.id, a.id_tipo, b.descripcion as tipolesion,a.titulo,a.descripcion FROM public.tratamientos as a inner join public.tipo_lesion as b on a.id_tipo=b.id WHERE a.id_tipo = %d order by a.id_tipo";
+		sql = String.format(sql, id_tipo);
+		return jdbcTemplate.queryForList(sql);
+	}
 
 	@PutMapping("/tratamientos/{id}")
 	public Map<String, Object> editTratamiento(@RequestBody Map<String, Object> tratamientoData,
