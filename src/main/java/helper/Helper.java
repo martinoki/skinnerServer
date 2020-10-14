@@ -95,11 +95,9 @@ public class Helper {
 			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			ObjectMapper mapper = new ObjectMapper();
 			while ((s = in.readLine()) != null) {
-
 				ExpressionParser parser = new SpelExpressionParser();
 				Map<String, String> results = (Map) parser.parseExpression(s).getValue();
-
-				map.put("analisis", results.toString().replace("=", ":"));
+				map.put("analisis", s.toString().replace("'", "\""));
 				String key = maxUsingIteration(results);
 				System.out.println(results.get(key));
 				if (Double.parseDouble(results.get(key)) < 0.66) {
