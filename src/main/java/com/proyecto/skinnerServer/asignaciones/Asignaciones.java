@@ -62,8 +62,8 @@ public class Asignaciones {
 				String resultadoSolicitud = "rechazada";
 				if((boolean)asignacionData.get("aprobado") == true) {
 					resultadoSolicitud = "aprobada";
-					String updateQuery = "UPDATE lesiones SET id_doctor = %d WHERE id = %d";
-					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lesion"));
+					String updateQuery = "UPDATE lesiones SET id_doctor = %d, id_lugar = %d WHERE id = %d";
+					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lugar"), lista.get(0).get("id_lesion"));
 					jdbcTemplate.update(updateQuery);
 				}
 				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue ".concat(resultadoSolicitud));				
@@ -77,8 +77,8 @@ public class Asignaciones {
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> asignacionData){
 		Map<String, Object> result = new HashMap<String, Object>();
 		System.out.println(result.toString());
-		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, fecha_creacion) VALUES(%d, %d, %d, NOW()::timestamp) RETURNING id"; 
-		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"));
+		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion) VALUES(%d, %d, %d, NOW()::timestamp) RETURNING id"; 
+		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"),  asignacionData.get("id_lugar"));
 		return jdbcTemplate.queryForMap(sql);
 	}
 	
