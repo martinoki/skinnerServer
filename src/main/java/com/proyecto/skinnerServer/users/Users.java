@@ -196,7 +196,7 @@ public class Users {
 		sql = "UPDATE public.usuarios SET password = '%s' WHERE email = '%s';";
 		sql = String.format(sql, hashedPass, email);
 		jdbcTemplate.update(sql);
-		EmailBody emailBody = new EmailBody(email, "Su nueva contraseña es: ".concat(newPassword), "SkinnerApp - Recuperar contraseña");
+		EmailBody emailBody = new EmailBody(email, "Su nueva contrase&ntilde;a es: ".concat(newPassword), "SkinnerApp - Recuperar contrase&ntilde;a");
 		emailPort.sendEmail(emailBody);
 		response.put("status", 200);
 		response.put("message", "Usuario actualizado correctamente");
