@@ -77,7 +77,7 @@ public class Asignaciones {
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> asignacionData){
 		Map<String, Object> result = new HashMap<String, Object>();
 		System.out.println(result.toString());
-		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion) VALUES(%d, %d, %d, NOW()::timestamp) RETURNING id"; 
+		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion) VALUES(%d, %d, %d, %d, NOW()::timestamp) RETURNING id"; 
 		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"),  asignacionData.get("id_lugar"));
 		return jdbcTemplate.queryForMap(sql);
 	}
