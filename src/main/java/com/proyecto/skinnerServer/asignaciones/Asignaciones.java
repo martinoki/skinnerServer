@@ -66,7 +66,7 @@ public class Asignaciones {
 					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lugar"), lista.get(0).get("id_lesion"));
 					jdbcTemplate.update(updateQuery);
 				}
-				Helper.enviarNotificacion(token, "Solicitud de atenciÃ³n", "Su solicitud fue ".concat(resultadoSolicitud));				
+				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue ".concat(resultadoSolicitud));				
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 	        map.put("status", 200);
