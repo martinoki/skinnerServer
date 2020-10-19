@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.RequestMapping;
 //import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.proyecto.skinnerServer.api.email.EmailBody;
+import com.proyecto.skinnerServer.api.email.EmailPort;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -28,6 +32,9 @@ public class Asignaciones {
 	
 	 @Autowired
 	 JdbcTemplate jdbcTemplate;
+	 
+	 @Autowired
+		private EmailPort emailPort;
 	 
 	/*
 	@GetMapping("historial/{id}")
@@ -56,17 +63,25 @@ public class Asignaciones {
 			sql = String.format(sql, asignacionData.get("aprobado"), id);
 			List<Map<String,Object>> lista = jdbcTemplate.queryForList(sql);
 			if(!lista.isEmpty()) {
-				sql = "SELECT token FROM usuarios WHERE id = %d";
+				sql = "SELECT email, token FROM usuarios WHERE id = %d";
 				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_paciente").toString()));
-				String token = jdbcTemplate.queryForObject(sql, String.class);
+				Map<String, Object> userData = jdbcTemplate.queryForMap(sql);
 				String resultadoSolicitud = "rechazada";
+				Map<String, Object> datosMedico = jdbcTemplate.queryForMap("SELECT * FROM lugares WHERE id = "+lista.get(0).get("id_lugar"));
 				if((boolean)asignacionData.get("aprobado") == true) {
 					resultadoSolicitud = "aprobada";
 					String updateQuery = "UPDATE lesiones SET id_doctor = %d, id_lugar = %d WHERE id = %d";
 					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lugar"), lista.get(0).get("id_lesion"));
 					jdbcTemplate.update(updateQuery);
+				}else {
+					
 				}
-				Helper.enviarNotificacion(token, "Solicitud de atención", "Su solicitud fue ".concat(resultadoSolicitud));				
+				Helper.enviarNotificacion(userData.get("token").toString(), "Solicitud de atenci&oacute;n", "Su solicitud fue ".concat(resultadoSolicitud));
+				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
+						"Su solicitud fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
+						"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+
+						"Telefono: " +datosMedico.get("telefono"), "SkinnerApp - Solicitud de atenciÃ³n");
+				emailPort.sendEmail(emailBody);
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 	        map.put("status", 200);
