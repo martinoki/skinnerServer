@@ -93,9 +93,9 @@ public class Users {
 
 	@PutMapping("/usuarios/{id}")
 	public Map<String, Object> editUsuario(@RequestBody Map<String, Object> usuarioData, @PathVariable("id") long id) {
-		String sql = "UPDATE public.usuarios SET nombre = '%s', apellido = '%s', telefono = '%s', direccion = '%s', id_rol = %d,activo=%s WHERE id = %d RETURNING *";
+		String sql = "UPDATE public.usuarios SET nombre = '%s', apellido = '%s', telefono = '%s', direccion = '%s', id_rol = %d,activo=%s, recibir_notificaciones=%b WHERE id = %d RETURNING *";
 		sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("telefono"),
-				usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("activo"), id);
+				usuarioData.get("direccion"), usuarioData.get("id_rol"), usuarioData.get("activo"),usuarioData.get("recibir_notificaciones"), id);
 
 		jdbcTemplate.queryForList(sql);
 		Map<String, Object> map = new HashMap<String, Object>();
