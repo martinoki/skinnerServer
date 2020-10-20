@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.proyecto.skinnerServer.api.email.EmailBody;
 import com.proyecto.skinnerServer.api.email.EmailPort;
 
+import helper.EmailHtmlCreator;
 import helper.Helper;
 import helper.UpdatableBCrypt;
 import helper.passwordGenerator;
@@ -135,7 +136,9 @@ public class Users {
 			if(usuarioData.containsKey("password")) {
 				password = usuarioData.get("password").toString();
 			}
-			EmailBody emailBody = new EmailBody(usuarioData.get("email").toString(), "Se ha creado un nuevo usuario para este mail con la contraseña: ".concat(password), "SkinnerApp - Creacion de usuario");
+			EmailBody emailBody = new EmailBody(usuarioData.get("email").toString(),
+					EmailHtmlCreator.createBody("Creación de usuario",
+							"Se ha creado un nuevo usuario para este mail con la contraseña: ".concat(password)), "SkinnerApp - Creacion de usuario");
 			emailPort.sendEmail(emailBody);
 			sql = String.format(sql, usuarioData.get("nombre"), usuarioData.get("apellido"), usuarioData.get("email"),
 					hasheador.hash(password), usuarioData.get("telefono"),
@@ -196,7 +199,9 @@ public class Users {
 		sql = "UPDATE public.usuarios SET password = '%s' WHERE email = '%s';";
 		sql = String.format(sql, hashedPass, email);
 		jdbcTemplate.update(sql);
-		EmailBody emailBody = new EmailBody(email, "Su nueva contrase&ntilde;a es: ".concat(newPassword), "SkinnerApp - Recuperar contrase&ntilde;a");
+		EmailBody emailBody = new EmailBody(email, 
+				EmailHtmlCreator.createBody("Solicitud de atención",
+				"Su nueva contraseña es: ".concat(newPassword)), "SkinnerApp - Recuperar contrase&ntilde;a");
 		emailPort.sendEmail(emailBody);
 		response.put("status", 200);
 		response.put("message", "Usuario actualizado correctamente");

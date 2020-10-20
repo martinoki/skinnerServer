@@ -22,6 +22,7 @@ import com.proyecto.skinnerServer.api.email.EmailPort;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import helper.EmailHtmlCreator;
 import helper.Helper;
 
 @RestController
@@ -76,11 +77,15 @@ public class Asignaciones {
 				}else {
 					
 				}
-				Helper.enviarNotificacion(userData.get("token").toString(), "Solicitud de atenci&oacute;n", "Su solicitud fue ".concat(resultadoSolicitud));
+				Helper.enviarNotificacion(userData.get("token").toString(),
+						"Solicitud de atenci&oacute;n", "Su solicitud fue ".concat(resultadoSolicitud));
 				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
-						"Su solicitud fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
-						"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+
-						"Telefono: " +datosMedico.get("telefono"), "SkinnerApp - Solicitud de atención");
+						EmailHtmlCreator.createBody("Solicitud de atención",
+								"Su solicitud fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
+										"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+
+										"Telefono: " +datosMedico.get("telefono")
+								)
+						, "SkinnerApp - Solicitud de atención");
 				emailPort.sendEmail(emailBody);
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
