@@ -67,6 +67,9 @@ public class Asignaciones {
 				sql = "SELECT email, token FROM usuarios WHERE id = %d";
 				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_paciente").toString()));
 				Map<String, Object> userData = jdbcTemplate.queryForMap(sql);
+				sql = "SELECT * FROM usuarios WHERE id = %d";
+				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_doctor").toString()));
+				Map<String, Object> doctorData = jdbcTemplate.queryForMap(sql);
 				String resultadoSolicitud = "rechazada";
 				Map<String, Object> datosMedico = jdbcTemplate.queryForMap("SELECT * FROM lugares WHERE id = "+lista.get(0).get("id_lugar"));
 				if((boolean)asignacionData.get("aprobado") == true) {
@@ -78,14 +81,18 @@ public class Asignaciones {
 					
 				}
 				Helper.enviarNotificacion(userData.get("token").toString(),
-						"Solicitud de atenci&oacute;n", "Su solicitud fue ".concat(resultadoSolicitud));
+						"Solicitud de atención", "Su solicitud de atención con el doctor "+
+						doctorData.get("nombre") + " " + doctorData.get("apellido") +
+						" fue ".concat(resultadoSolicitud));
 				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
-						EmailHtmlCreator.createBody("Solicitud de atención",
-								"Su solicitud fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
+						EmailHtmlCreator.createBody("Solicitud de atenci&oacute;n",
+								"Su solicitud de atenci&oacute;n con el doctor " +
+										doctorData.get("nombre") + " " + doctorData.get("apellido") +
+										" fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
 										"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+
 										"Telefono: " +datosMedico.get("telefono")
 								)
-						, "SkinnerApp - Solicitud de atención");
+						, "SkinnerApp - Solicitud de atenci&oacute;n");
 				emailPort.sendEmail(emailBody);
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
