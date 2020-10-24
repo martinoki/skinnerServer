@@ -81,7 +81,7 @@ public class Asignaciones {
 					
 				}
 				Helper.enviarNotificacion(userData.get("token").toString(),
-						"Solicitud de atenciÃ³n", "Su solicitud de atenciÃ³n con el doctor "+
+						"Solicitud de atención", "Su solicitud de atención con el doctor "+
 						doctorData.get("nombre") + " " + doctorData.get("apellido") +
 						" fue ".concat(resultadoSolicitud));
 				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
@@ -92,7 +92,7 @@ public class Asignaciones {
 										"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+
 										"Telefono: " +datosMedico.get("telefono")
 								)
-						, "SkinnerApp - Solicitud de atenci&oacute;n");
+						, "SkinnerApp - Solicitud de atención");
 				emailPort.sendEmail(emailBody);
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
