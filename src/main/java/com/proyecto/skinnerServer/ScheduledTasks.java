@@ -57,7 +57,7 @@ public class ScheduledTasks {
 	public void reportPorClima() {
 		String sql = "SELECT id_ciudad, token FROM usuarios WHERE id_ciudad is not null AND token is not null";
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
-		String title = "Skinner - Cuidá tu piel";
+		String title = "Skinner - Cuide su piel";
 		String body = "";
 		List<String> tokenList = new ArrayList<String>();
 		List<String> heatList = new ArrayList<String>(Arrays.asList(
