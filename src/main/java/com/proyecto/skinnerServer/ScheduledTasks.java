@@ -60,16 +60,20 @@ public class ScheduledTasks {
 		String title = "Skinner - Cuidá tu piel";
 		String body = "";
 		List<String> tokenList = new ArrayList<String>();
-		List<String> heatList = new ArrayList<String>(Arrays.asList("Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la accion directa del sol",
-		                                               "No olvide proteccion solar, sombrero y gafas",
-		                                               "Tome agua para que tanto usted como su piel estén hidratados",
-		                                               "Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"));
-		List<String> coldList = new ArrayList<String>(Arrays.asList("Protejase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
-				"Si va a estar durante periodos prolongados afuera, utilice protector de Factor 15 o superior",
-				"Proteja sus labios y mantenengalos humectados ante bajas temperaturas",
-				"Mantenga la piel hidratada ante temperaturas bajas",
-				"Intente evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"));
-		List<String> windList = new ArrayList<String>(Arrays.asList("En dias de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la proteccion de la piel contra la luz solar"));
+		List<String> heatList = new ArrayList<String>(Arrays.asList(
+				"Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la acción directa del sol",
+				"No olvide protección solar, sombrero y gafas",
+				"Tome agua para que tanto usted como su piel estén hidratados",
+				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
+			));
+		List<String> coldList = new ArrayList<String>(Arrays.asList(
+			"Protéjase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
+			"Si va a estar durante periodos prolongados afuera, utilice protector de Factor 15 o superior",
+			"Proteja sus labios y manténgalos humectados ante bajas temperaturas",
+			"Mantenga la piel hidratada ante temperaturas bajas",
+			"Intente evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
+		));
+		List<String> windList = new ArrayList<String>(Arrays.asList("En días de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la protección de la piel contra la luz solar"));
 		for (Map<String, Object> user : result) {
 			String token = user.get("token").toString();
 			HttpHeaders headers = new HttpHeaders();
