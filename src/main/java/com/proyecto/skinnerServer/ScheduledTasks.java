@@ -52,7 +52,7 @@ public class ScheduledTasks {
 		}
 	}
 	
-	@Scheduled(fixedDelay = 5000)
+	@Scheduled(cron = "0 0 9 * * ?")
 	//s m h...
 	public void reportPorClima() {
 		String sql = "SELECT id_ciudad, token FROM usuarios WHERE id_ciudad is not null AND token is not null";
