@@ -2,15 +2,26 @@ package com.proyecto.skinnerServer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.proyecto.skinnerServer.users.Post;
 
 import helper.Helper;
 
@@ -39,6 +50,53 @@ public class ScheduledTasks {
 			String doctor = map.get("nombre_doctor").toString().concat(" " + map.get("apellido_doctor").toString());
 			Helper.enviarNotificacion(token, title, String.format(body, doctor, fecha_inicio));
 		}
+	}
+	
+	@Scheduled(fixedDelay = 5000)
+	//s m h...
+	public void reportPorClima() {
+		String sql = "SELECT id_ciudad, token FROM usuarios WHERE id_ciudad is not null AND token is not null";
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
+		String title = "Skinner - Cuidá tu piel";
+		String body = "";
+		List<String> tokenList = new ArrayList<String>();
+		List<String> heatList = new ArrayList<String>(Arrays.asList("Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la accion directa del sol",
+		                                               "No olvide proteccion solar, sombrero y gafas",
+		                                               "Tome agua para que tanto usted como su piel estén hidratados",
+		                                               "Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"));
+		List<String> coldList = new ArrayList<String>(Arrays.asList("Protejase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
+				"Si va a estar durante periodos prolongados afuera, utilice protector de Factor 15 o superior",
+				"Proteja sus labios y mantenengalos humectados ante bajas temperaturas",
+				"Mantenga la piel hidratada ante temperaturas bajas",
+				"Intente evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"));
+		List<String> windList = new ArrayList<String>(Arrays.asList("En dias de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la proteccion de la piel contra la luz solar"));
+		for (Map<String, Object> user : result) {
+			String token = user.get("token").toString();
+			HttpHeaders headers = new HttpHeaders();
+
+			String url = "http://api.openweathermap.org/data/2.5/weather?id=" + user.get("id_ciudad").toString() + "&appid=eb2ce71ace7982b5fe52176f33a38674&units=metric&lang=sp";
+			RestTemplate restTemplate = new RestTemplate();
+			ParameterizedTypeReference<Map<String, Object>> typeRef = new ParameterizedTypeReference<Map<String, Object>>() {};
+			
+			ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
+			Map<String, Double> main = (Map<String, Double>)response.getBody().get("main");
+			Map<String, Double> wind = (Map<String, Double>)response.getBody().get("wind");
+			Double temp = main.get("temp");
+			Double windSpeed = wind.get("speed");
+			if(windSpeed > 20) {
+				int rnd = new Random().nextInt(windList.size());
+				body = windList.get(rnd);
+			} else if(temp > 25) {
+				int rnd = new Random().nextInt(heatList.size());
+				body = heatList.get(rnd);
+			} else {
+				int rnd = new Random().nextInt(coldList.size());
+				body = coldList.get(rnd);
+			}
+			
+			Helper.enviarNotificacion(token, title, body);
+		}
+
 	}
 	
 	@Scheduled(cron = "0 0 12 * * ?")
