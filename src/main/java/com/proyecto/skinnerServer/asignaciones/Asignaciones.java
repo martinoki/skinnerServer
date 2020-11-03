@@ -52,10 +52,17 @@ public class Asignaciones {
 	}
 	
 	@GetMapping("/asignaciones/count/{id_doctor}")
-	public int getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND aprobado is null";
+	public Map<String, Integer> getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
+		String sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND aprobado is null AND tipo_notificacion ILIKE 'asignacion'";
 		sql = String.format(sql, id_doctor);
-		return jdbcTemplate.queryForObject(sql, Integer.class);
+		Integer countAsignaciones = jdbcTemplate.queryForObject(sql, Integer.class);
+		sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND tipo_notificacion ILIKE 'notificacion'";
+		sql = String.format(sql, id_doctor);
+		Integer countNotificaciones = jdbcTemplate.queryForObject(sql, Integer.class);
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		result.put("asignaciones", countAsignaciones);
+		result.put("notificaciones", countNotificaciones);
+		return result;
 	}
 	
 	@PutMapping("/asignaciones/{id}")
