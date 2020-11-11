@@ -27,7 +27,7 @@ import helper.Helper;
 
 @RestController
 //@RequestMapping(path="/")
-@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT})
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 
 public class Asignaciones {
 	
@@ -46,17 +46,22 @@ public class Asignaciones {
 	
 	@GetMapping("/asignaciones/{id_doctor}")
 	public List<Map<String,Object>> getAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d AND a.aprobado is null";
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d AND a.aprobado is null and tipo_notificacion='asignacion'";
 		sql = String.format(sql, id_doctor);
 		return jdbcTemplate.queryForList(sql);
 	}
-	
+	@GetMapping("/asignaciones/{id_doctor}/notificaciones")
+	public List<Map<String,Object>> getAsignacionesPorIdDoctorTipo(@PathVariable("id_doctor") long id_doctor){
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d and tipo_notificacion='notificacion'";
+		sql = String.format(sql, id_doctor);
+		return jdbcTemplate.queryForList(sql);
+	}
 	@GetMapping("/asignaciones/count/{id_doctor}")
 	public Map<String, Integer> getCantidadAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND aprobado is null AND tipo_notificacion ILIKE 'asignacion'";
+		String sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND aprobado is null AND tipo_notificacion = 'asignacion'";
 		sql = String.format(sql, id_doctor);
 		Integer countAsignaciones = jdbcTemplate.queryForObject(sql, Integer.class);
-		sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND tipo_notificacion ILIKE 'notificacion'";
+		sql = "SELECT count(*) FROM asignaciones WHERE id_doctor = %d AND tipo_notificacion = 'notificacion'";
 		sql = String.format(sql, id_doctor);
 		Integer countNotificaciones = jdbcTemplate.queryForObject(sql, Integer.class);
 		Map<String, Integer> result = new HashMap<String, Integer>();
@@ -64,7 +69,12 @@ public class Asignaciones {
 		result.put("notificaciones", countNotificaciones);
 		return result;
 	}
-	
+	@DeleteMapping("/asignaciones/{id}")
+	public void borrarNotificaciones(@PathVariable("id") long id){
+		String sql = "delete from asignaciones where id=%d";
+		sql = String.format(sql, id);
+		jdbcTemplate.update(sql);
+	}
 	@PutMapping("/asignaciones/{id}")
 		public Map<String,Object> editAginacion(@RequestBody Map<String,Object> asignacionData, @PathVariable("id") long id){
 			String sql = "UPDATE asignaciones SET aprobado = %b, fecha_modificacion= NOW()::timestamp WHERE id = %d RETURNING  *";
@@ -111,8 +121,8 @@ public class Asignaciones {
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> asignacionData){
 		Map<String, Object> result = new HashMap<String, Object>();
 		System.out.println(result.toString());
-		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion) VALUES(%d, %d, %d, %d, NOW()::timestamp) RETURNING id"; 
-		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"),  asignacionData.get("id_lugar"));
+		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion,tipo_notificacion) VALUES(%d, %d, %d, %d, NOW()::timestamp,%s) RETURNING id"; 
+		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"),  asignacionData.get("id_lugar"),asignacionData.get("tipo_notificacion"));
 		return jdbcTemplate.queryForMap(sql);
 	}
 	
