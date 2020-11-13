@@ -33,6 +33,17 @@ public class Adicional {
 	 @Autowired
 	 JdbcTemplate jdbcTemplate;
 
+	@GetMapping("/adicionales/{id}/count")
+	public Map<String, Integer> getAdicionalesPorId(@PathVariable("id") long id){
+		String sql = "SELECT count(*) FROM adicionales WHERE id_historial= %d ";
+		sql = String.format(sql, id);
+		Integer countAdicionales = jdbcTemplate.queryForObject(sql, Integer.class);
+		sql = "SELECT count(*) FROM adicionales WHERE id_historial= %d";
+		sql = String.format(sql, id);
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		result.put("adicionales", countAdicionales);
+		return result;
+	}
 	@GetMapping("/adicionales/{id}")
 	public List<Map<String,Object>> getAsignacionesPorId(@PathVariable("id") long id){
 		String sql = "SELECT * FROM adicionales WHERE id_historial= %d order by id_tipo asc";
