@@ -224,7 +224,7 @@ public class Helper {
 					
 					idx++;
 				}
-				values = values.substring(0, sqlInsert.length() - 1);
+				values = values.substring(0, values.length() - 1);
 			}
 			if(values.equals("")) {
 				return "";
