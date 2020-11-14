@@ -101,7 +101,7 @@ public class Helper {
 				String key = maxUsingIteration(results);
 				System.out.println(results.get(key));
 				if (Double.parseDouble(results.get(key)) < 0.66) {
-					key = "ninguna";
+					key = "A Confirmar";
 				}
 
 				if (key.equals("lunar") || key.equals("melanoma")) {
