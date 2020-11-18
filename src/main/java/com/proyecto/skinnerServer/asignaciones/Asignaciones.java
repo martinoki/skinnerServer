@@ -46,13 +46,13 @@ public class Asignaciones {
 	
 	@GetMapping("/asignaciones/{id_doctor}")
 	public List<Map<String,Object>> getAsignacionesPorIdDoctor(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d AND a.aprobado is null and tipo_notificacion='asignacion'";
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d AND a.aprobado is null and tipo_notificacion='asignacion' order by fecha_modificacion desc";
 		sql = String.format(sql, id_doctor);
 		return jdbcTemplate.queryForList(sql);
 	}
 	@GetMapping("/asignaciones/{id_doctor}/notificaciones")
 	public List<Map<String,Object>> getAsignacionesPorIdDoctorTipo(@PathVariable("id_doctor") long id_doctor){
-		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d and tipo_notificacion='notificacion'";
+		String sql = "SELECT a.*, l.*, u.nombre, u.apellido FROM asignaciones a JOIN usuarios u ON a.id_paciente = u.id JOIN lesiones l ON a.id_lesion= l.id WHERE a.id_doctor = %d and tipo_notificacion='notificacion' order by fecha_modificacion desc";
 		sql = String.format(sql, id_doctor);
 		return jdbcTemplate.queryForList(sql);
 	}
@@ -88,9 +88,11 @@ public class Asignaciones {
 				sql = String.format(sql, Integer.parseInt(lista.get(0).get("id_doctor").toString()));
 				Map<String, Object> doctorData = jdbcTemplate.queryForMap(sql);
 				String resultadoSolicitud = "rechazada";
+				String mensajeSolicitud= "Por favor seleccione otro medico";
 				Map<String, Object> datosMedico = jdbcTemplate.queryForMap("SELECT * FROM lugares WHERE id = "+lista.get(0).get("id_lugar"));
 				if((boolean)asignacionData.get("aprobado") == true) {
 					resultadoSolicitud = "aprobada";
+					mensajeSolicitud= "Reserve turno a la brevedad";
 					String updateQuery = "UPDATE lesiones SET id_doctor = %d, id_lugar = %d WHERE id = %d";
 					updateQuery = String.format(updateQuery, lista.get(0).get("id_doctor"), lista.get(0).get("id_lugar"), lista.get(0).get("id_lesion"));
 					jdbcTemplate.update(updateQuery);
@@ -98,9 +100,9 @@ public class Asignaciones {
 					
 				}
 				Helper.enviarNotificacion(userData.get("token").toString(),
-						"Solicitud de consulta", "Su solicitud de consulta con el doctor "+
+						"Solicitud ".concat(resultadoSolicitud), "Su solicitud de consulta con el doctor "+
 						doctorData.get("nombre") + " " + doctorData.get("apellido") +
-						" fue ".concat(resultadoSolicitud));
+						" fue ".concat(resultadoSolicitud)+". ".concat(mensajeSolicitud));
 				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
 						EmailHtmlCreator.createBody("Solicitud de consulta",
 								"Su solicitud de consultan con el doctor " +
@@ -121,7 +123,7 @@ public class Asignaciones {
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> asignacionData){
 		Map<String, Object> result = new HashMap<String, Object>();
 		System.out.println(result.toString());
-		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion,tipo_notificacion) VALUES(%d, %d, %d, %d, NOW()::timestamp,%s) RETURNING id"; 
+		String sql = "INSERT INTO asignaciones (id_doctor, id_paciente, id_lesion, id_lugar, fecha_creacion,tipo_notificacion) VALUES(%d, %d, %d, %d, NOW()::timestamp,'%s') RETURNING id"; 
 		sql = String.format(sql, asignacionData.get("id_doctor"), asignacionData.get("id_paciente"),  asignacionData.get("id_lesion"),  asignacionData.get("id_lugar"),asignacionData.get("tipo_notificacion"));
 		return jdbcTemplate.queryForMap(sql);
 	}
