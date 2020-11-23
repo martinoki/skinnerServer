@@ -32,7 +32,8 @@ public class ScheduledTasks {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	@Scheduled(cron = "0 0 7 * * ?")
+	//@Scheduled(cron = "0 0 7 * * ?")
+    @Scheduled(fixedRate = 420000) //7 minutos
 	//s m h...
 	public void reportAgenda() {
 		String data = "The time is now " + (dateFormat.format(new Date())).toString();
@@ -52,8 +53,9 @@ public class ScheduledTasks {
 		}
 	}
 	
-	@Scheduled(cron = "0 0 9 * * ?")
+	//@Scheduled(cron = "0 0 9 * * ?")
 	//s m h...
+    @Scheduled(fixedRate = 900000) //15 minutos
 	public void reportPorClima() {
 		String sql = "SELECT id_ciudad, token FROM usuarios WHERE id_ciudad is not null AND token is not null";
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
@@ -61,19 +63,25 @@ public class ScheduledTasks {
 		String body = "";
 		List<String> tokenList = new ArrayList<String>();
 		List<String> heatList = new ArrayList<String>(Arrays.asList(
-				"Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la acciÃ³n directa del sol",
-				"No olvide protecciÃ³n solar, sombrero y gafas",
-				"Tome agua para que tanto usted como su piel estÃ©n hidratados",
-				"Intentar evitar la luz del sol desde las 10 de la maÃ±ana hasta las 17 horas, ya que en ese horario los rayos son mÃ¡s fuertes"
-			));
+				"Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la acción directa del sol",
+				"No olvide protección solar, sombrero y gafas",
+				"No olvide protección solar, sombrero y gafas",
+				"No olvide protección solar, sombrero y gafas",
+				"Tome agua para que tanto usted como su piel estén hidratados",
+				"Tome agua para que tanto usted como su piel estén hidratados",				
+				"Tome agua para que tanto usted como su piel estén hidratados",				
+				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes",
+				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes",
+				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
+				));
 		List<String> coldList = new ArrayList<String>(Arrays.asList(
-			"ProtÃ©jase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
+			"Protéjase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
 			"Si va a estar durante periodos prolongados afuera, utilice protector de Factor 15 o superior",
-			"Proteja sus labios y mantÃ©ngalos humectados ante bajas temperaturas",
+			"Proteja sus labios y manténgalos humectados ante bajas temperaturas",
 			"Mantenga la piel hidratada ante temperaturas bajas",
-			"Intente evitar la luz del sol desde las 10 de la maÃ±ana hasta las 17 horas, ya que en ese horario los rayos son mÃ¡s fuertes"
+			"Intente evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
 		));
-		List<String> windList = new ArrayList<String>(Arrays.asList("En dÃ­as de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la protecciÃ³n de la piel contra la luz solar"));
+		List<String> windList = new ArrayList<String>(Arrays.asList("En días de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la protección de la piel contra la luz solar"));
 		for (Map<String, Object> user : result) {
 			String token = user.get("token").toString();
 			HttpHeaders headers = new HttpHeaders();
@@ -102,8 +110,8 @@ public class ScheduledTasks {
 		}
 
 	}
-	
-	@Scheduled(cron = "0 0 12 * * ?")
+	//@Scheduled(cron = "0 0 12 * * ?")
+    @Scheduled(fixedRate = 660000) //11 minutos
 	public void reportRecomendaciones() {
 		String sql = "SELECT titulo, descripcion FROM recomendaciones r " + 
 				"WHERE id_tipo = ? " + 
