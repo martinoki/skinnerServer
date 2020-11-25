@@ -81,13 +81,13 @@ public class Helper {
 			String s2 = null;
 			String path;
 			Contenido contenido;
-			String baseDir = "\""+System.getProperty("user.dir") + "/src/main/resources/network";
-			String scriptDir = baseDir + "/label_image.py\" ";
-			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py \" ";
-			String modelDir = "--graph=" + baseDir + "/retrained_graph.pb \" ";
-			String labelDir = "--label=" + baseDir + "/retrained_labels.txt\" ";
-			String file = "--image=" + baseDir + "/decoderimage.jpg\" ";
-			String filename = "--image=" + baseDir + "/decoderimage\" ";
+			String baseDir = System.getProperty("user.dir") + "/src/main/resources/network";
+			String scriptDir = baseDir + "/label_image.py ";
+			String scriptDir2 = baseDir + "/DetectarContornoYExtraerCaracteristicas.py ";
+			String modelDir = "--graph=" + baseDir + "/retrained_graph.pb ";
+			String labelDir = "--label=" + baseDir + "/retrained_labels.txt ";
+			String file = "--image=" + baseDir + "/decoderimage.jpg ";
+			String filename = "--image=" + baseDir + "/decoderimage ";
 			// ENVIAR COMO PARAMETRO AL PYTHON CON EL MISMO NOMBRE QUE SE CREO CON EL
 			// DECODER
 			Process p = Runtime.getRuntime().exec("python3 " + scriptDir + modelDir + labelDir + file);
@@ -124,8 +124,10 @@ public class Helper {
 		return map;
 	}
 
-	public static Map<String, Object> analizarCaracteristicas(String imagenBase64) {
-		Map<String, Object> map = new HashMap<String, Object>();
+	public static String analizarCaracteristicas(String imagenBase64) {
+		Map<String, String> map = new HashMap<String, String>();
+		ObjectMapper objectMapper = new ObjectMapper();
+		String json = "";
 
 		try {
 
@@ -151,8 +153,11 @@ public class Helper {
 
 				path = data[0].getPathImagen();
 				contenido = data[0].getContenido();
-				map.put("asimetria", contenido.asimetria);
-				map.put("diametro", contenido.diametro);
+				map.put("asimetria", contenido.asimetria.toString().replace("'", "\""));
+				//QUITAMOS DIAMETRO PORQUE VIENE POR PARAMETRO DESDE LA APP
+//				map.put("diametro", Float.toString(contenido.diametro).replace("'", "\""));
+	            json = objectMapper.writeValueAsString(map);
+				System.out.println(json);
 				int idx = 1;
 				for (Caracteristicas item : data) {
 					String imagenRecortada = item.getPathImagen().concat("Recortada.png");
@@ -172,7 +177,7 @@ public class Helper {
 			e.printStackTrace();
 		}
 
-		return map;
+		return json;
 	}
 
 	

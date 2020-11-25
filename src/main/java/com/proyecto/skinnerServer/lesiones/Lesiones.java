@@ -83,8 +83,13 @@ public class Lesiones {
 	Map<String, Object> result = jdbcTemplate.queryForMap(sql);
 	int id_lesion = (int)result.get("id");
 	
-	String sqlHistorial = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha) VALUES(%d, %d, '%s', '%s', '%s') RETURNING id"; 
-	sqlHistorial = String.format(sqlHistorial, id_lesion,  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("imagen"),  lesionData.get("fecha_creacion"));
+	String resultadoAnalisisLunar = "";
+	if(tipo.get("result").equals("melanoma") || tipo.get("result").equals("lunar")) {
+		resultadoAnalisisLunar = Helper.analizarCaracteristicas(lesionData.get("imagen").toString());
+	}
+	System.out.println(resultadoAnalisisLunar);
+	String sqlHistorial = "INSERT INTO historial_lesion (id_lesion, id_doctor, descripcion, imagen, fecha, analisis) VALUES(%d, %d, '%s', '%s', '%s', '%s') RETURNING id"; 
+	sqlHistorial = String.format(sqlHistorial, id_lesion,  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("imagen"),  lesionData.get("fecha_creacion"), resultadoAnalisisLunar);
 	Map<String, Object> historial = jdbcTemplate.queryForMap(sqlHistorial);
 	result.put("id_historial", historial.get("id"));
 	String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), lesionData.get("imagen").toString());
