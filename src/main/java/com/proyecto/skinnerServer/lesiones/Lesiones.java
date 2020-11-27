@@ -83,7 +83,7 @@ public class Lesiones {
 	Map<String, Object> result = jdbcTemplate.queryForMap(sql);
 	int id_lesion = (int)result.get("id");
 	
-	String resultadoAnalisisLunar = "";
+	String resultadoAnalisisLunar = "{}";
 	if(tipo.get("result").equals("melanoma") || tipo.get("result").equals("lunar")) {
 		resultadoAnalisisLunar = Helper.analizarCaracteristicas(lesionData.get("imagen").toString());
 	}

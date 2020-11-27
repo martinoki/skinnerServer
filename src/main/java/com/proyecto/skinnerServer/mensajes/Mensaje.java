@@ -53,7 +53,16 @@ public class Mensaje {
 		
 		@GetMapping("/mensajes/paciente/{idPaciente}")
 		public List<Map<String,Object>> getMensajesByIdPaciente(@PathVariable("idPaciente") long id){
-			String sql = "Select id_origen_usuario, id_lesion, fecha, nombre_destino,apellido_destino,mensaje, id_destino_usuario, l.descripcion as descripcion,l.imagen as imagen from (SELECT a.id_origen_usuario as id_origen_usuario, a.id_lesion as id_lesion, MAX(a.fecha) as fecha,MAX(c.nombre)as nombre_destino,MAX(c.apellido) as apellido_destino,MAX(a.mensaje) as mensaje,MAX(a.id_destino_usuario) as id_destino_usuario FROM mensajes a join usuarios c on a.id_destino_usuario=c.id WHERE a.id_origen_usuario= %d GROUP BY a.id_origen_usuario, a.id_lesion ORDER BY MAX(a.fecha) DESC) as m join lesiones l on m.id_lesion=l.id order by fecha desc";
+			String sql = "select id_origen_usuario, id_lesion, fecha, c.nombre as nombre_destino, c.apellido as apellido_destino, mensaje, id_destino_usuario, l.descripcion as descripcion,l.imagen as imagen from  " + 
+					"( " + 
+					"select msg.*, ROW_NUMBER() OVER( " + 
+					"    PARTITION BY id_lesion " + 
+					"    ORDER BY id_lesion, fecha desc ) as rnum  " + 
+					"from (select * from mensajes m where id_origen_usuario = 3 order by id_lesion, fecha) as msg) as a " + 
+					" " + 
+					"join lesiones l on a.id_lesion=l.id " + 
+					"join usuarios c on a.id_destino_usuario=c.id " + 
+					"where rnum = 1";
 			sql = String.format(sql, id);
 			return jdbcTemplate.queryForList(sql);
 		}
