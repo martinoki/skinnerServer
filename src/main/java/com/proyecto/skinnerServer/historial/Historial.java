@@ -105,6 +105,8 @@ public class Historial {
 				jdbcTemplate.update(queryAdicionales);			
 			}
 		}
+		historial.put("id_tipo", historialData.get("id_tipo"));
+		historial.put("id_lesion", historialData.get("id_lesion"));
 		
 		return historial;
 	}
