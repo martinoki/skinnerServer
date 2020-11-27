@@ -89,6 +89,16 @@ public class Historial {
 	        return map;
 	}
 	
+	@PutMapping("/historial/analisis/{id}")
+	public Map<String,Object> updateAnalisisHistorial(@RequestBody String historialData, @PathVariable("id") long id){
+		String sql = "UPDATE historial_lesion SET analisis = '%s' WHERE id = %d";
+		sql = String.format(sql, historialData.toString(), id);
+		jdbcTemplate.update(sql);
+		Map<String, Object> map = new HashMap<String, Object>();
+        map.put("status", 200);
+        return map;
+}
+	
 	@PostMapping("/historial")
 	public Map<String,Object> insertHistorial(@RequestBody Map<String,Object> historialData){
 		String result = "{}";
