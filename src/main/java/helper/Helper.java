@@ -100,7 +100,7 @@ public class Helper {
 				map.put("analisis", s.toString().replace("'", "\""));
 				String key = maxUsingIteration(results);
 				System.out.println(results.get(key));
-				if (Double.parseDouble(results.get(key)) < 0.66) {
+				if (Double.parseDouble(results.get(key)) < 0.60) {
 					key = "A Confirmar";
 				}
 
