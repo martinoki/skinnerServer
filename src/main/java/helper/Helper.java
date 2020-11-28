@@ -127,7 +127,7 @@ public class Helper {
 	public static String analizarCaracteristicas(String imagenBase64) {
 		Map<String, String> map = new HashMap<String, String>();
 		ObjectMapper objectMapper = new ObjectMapper();
-		String json = "";
+		String json = "{}";
 
 		try {
 

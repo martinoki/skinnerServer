@@ -172,11 +172,11 @@ def run_char(image_data):
         ellipse_pnts = cv2.ellipse2Poly((int(ellipse[0][0]), int(ellipse[0][1])), (int(ellipse[1][0]), int(ellipse[1][1])),
                                         int(ellipse[2]), 0, 360, 1)
         comp = cv2.matchShapes(area.contornoInteres, ellipse_pnts, 1, 0.0)
-        if comp < 0.099:
-            area.asimetria="Asimetrico"
+        if comp > 0.055:
+            area.asimetria="Asimétrico"
             #print("Asymmetric")
         else:
-            area.asimetria="Simetrico"
+            area.asimetria="Simétrico"
             #print("Symmetric")
 
     # Show the output image

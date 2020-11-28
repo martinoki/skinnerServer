@@ -92,9 +92,11 @@ public class Lesiones {
 	sqlHistorial = String.format(sqlHistorial, id_lesion,  lesionData.get("id_doctor"),  lesionData.get("descripcion"),  lesionData.get("imagen"),  lesionData.get("fecha_creacion"), resultadoAnalisisLunar);
 	Map<String, Object> historial = jdbcTemplate.queryForMap(sqlHistorial);
 	result.put("id_historial", historial.get("id"));
-	String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), lesionData.get("imagen").toString());
-	if(!queryAdicionales.equals("")) {
-		jdbcTemplate.update(queryAdicionales);			
+	if(tipo.get("result").equals("melanoma") || tipo.get("result").equals("lunar")) {
+		String queryAdicionales = Helper.agregarAdicionales((int)historial.get("id"), lesionData.get("imagen").toString());
+		if(!queryAdicionales.equals("")) {
+			jdbcTemplate.update(queryAdicionales);			
+		}
 	}
 	return result;
 	}
