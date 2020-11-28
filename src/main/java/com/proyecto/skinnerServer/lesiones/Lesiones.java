@@ -50,7 +50,7 @@ public class Lesiones {
 	
 	@GetMapping("/lesiones/usuarios/{id}")
 	public List<Map<String,Object>> getUsuarioPorIdLesion(@PathVariable("id") long id){
-		String sql = "SELECT id_paciente,id_doctor FROM lesiones WHERE id = %d";
+		String sql = "SELECT id_paciente,id_doctor FROM lesiones WHERE id = %d ORDER BY fecha_creacion desc";
 		sql = String.format(sql, id);
 		return jdbcTemplate.queryForList(sql);
 	}
