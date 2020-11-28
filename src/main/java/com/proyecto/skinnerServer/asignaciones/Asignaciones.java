@@ -105,7 +105,7 @@ public class Asignaciones {
 						" fue ".concat(resultadoSolicitud)+". ".concat(mensajeSolicitud));
 				EmailBody emailBody = new EmailBody(userData.get("email").toString(),
 						EmailHtmlCreator.createBody("Solicitud de consulta",
-								"Su solicitud de consultan con el doctor " +
+								"Su solicitud de consulta con el doctor " +
 										doctorData.get("nombre") + " " + doctorData.get("apellido") +
 										" fue " + resultadoSolicitud + "<br/>Lugar: "+datosMedico.get("nombre") + "<br/>"+
 										"Direccion: "+ datosMedico.get("direccion").toString()+"<br/>"+

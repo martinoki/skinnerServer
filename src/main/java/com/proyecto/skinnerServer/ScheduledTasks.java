@@ -43,7 +43,7 @@ public class ScheduledTasks {
 				+ "and fecha_inicio < NOW()::timestamp + interval '1 DAY' and u1.token is not null";
 
 		String title = "Recordatorio de Turno";
-		String body = "Turno con el doctor %s \n el dia %s";
+		String body = "Turno con el doctor %s \n el dia %s hs.";
 		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
 		for (Map<String, Object> map : result) {
 			String token = map.get("token").toString();
@@ -63,25 +63,25 @@ public class ScheduledTasks {
 		String body = "";
 		List<String> tokenList = new ArrayList<String>();
 		List<String> heatList = new ArrayList<String>(Arrays.asList(
-				"Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la acción directa del sol",
-				"No olvide protección solar, sombrero y gafas",
-				"No olvide protección solar, sombrero y gafas",
-				"No olvide protección solar, sombrero y gafas",
-				"Tome agua para que tanto usted como su piel estén hidratados",
-				"Tome agua para que tanto usted como su piel estén hidratados",				
-				"Tome agua para que tanto usted como su piel estén hidratados",				
-				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes",
-				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes",
-				"Intentar evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
+				"Utilice ropa ligera y clara que cubra la mayor parte del cuerpo para evitar la acciï¿½n directa del sol",
+				"No olvide protecciï¿½n solar, sombrero y gafas",
+				"No olvide protecciï¿½n solar, sombrero y gafas",
+				"No olvide protecciï¿½n solar, sombrero y gafas",
+				"Tome agua para que tanto usted como su piel estï¿½n hidratados",
+				"Tome agua para que tanto usted como su piel estï¿½n hidratados",				
+				"Tome agua para que tanto usted como su piel estï¿½n hidratados",				
+				"Intentar evitar la luz del sol desde las 10 de la maï¿½ana hasta las 17 horas, ya que en ese horario los rayos son mï¿½s fuertes",
+				"Intentar evitar la luz del sol desde las 10 de la maï¿½ana hasta las 17 horas, ya que en ese horario los rayos son mï¿½s fuertes",
+				"Intentar evitar la luz del sol desde las 10 de la maï¿½ana hasta las 17 horas, ya que en ese horario los rayos son mï¿½s fuertes"
 				));
 		List<String> coldList = new ArrayList<String>(Arrays.asList(
-			"Protéjase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
+			"Protï¿½jase con ropa comoda y no abrasiva ya que puede ser peligroso para la piel",
 			"Si va a estar durante periodos prolongados afuera, utilice protector de Factor 15 o superior",
-			"Proteja sus labios y manténgalos humectados ante bajas temperaturas",
+			"Proteja sus labios y mantï¿½ngalos humectados ante bajas temperaturas",
 			"Mantenga la piel hidratada ante temperaturas bajas",
-			"Intente evitar la luz del sol desde las 10 de la mañana hasta las 17 horas, ya que en ese horario los rayos son más fuertes"
+			"Intente evitar la luz del sol desde las 10 de la maï¿½ana hasta las 17 horas, ya que en ese horario los rayos son mï¿½s fuertes"
 		));
-		List<String> windList = new ArrayList<String>(Arrays.asList("En días de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la protección de la piel contra la luz solar"));
+		List<String> windList = new ArrayList<String>(Arrays.asList("En dï¿½as de mucho viento, procure proteger la zona afectada utilizando anteojos, mangas largas y gorro o sombrero ya que el viento puede reducir la protecciï¿½n de la piel contra la luz solar"));
 		for (Map<String, Object> user : result) {
 			String token = user.get("token").toString();
 			HttpHeaders headers = new HttpHeaders();
